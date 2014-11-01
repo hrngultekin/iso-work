@@ -1,5 +1,5 @@
 <PardusmanProject type="install" compression="xz">
-    <Title>Pisi Linux 1.0 KDE x86_64</Title>
+    <Title>Pisi Linux 1.1 KDE x86_64</Title>
     <WorkDir>/home/kaptan/some_dir</WorkDir>
     <ReleaseFiles>/home/kaptan/some_dir/release-files/pisilinux/media-content</ReleaseFiles>
     <PackageCollections>
