@@ -369,7 +369,8 @@ class Project:
 
                 # Writes Packages
                 packageSelection = packageCollection.insertTag("PackageSelection")
-                packageSelection.setAttribute("repo_uri", collection.packages.repoURI)
+                # FIXME: ilker manap, self.repo_uri almasi gerek.
+                packageSelection.setAttribute("repo_uri", self.repo_uri)
                 for item in collection.packages.selectedComponents:
                     packageSelection.insertTag("SelectedComponent").insertData(item)
                 for item in collection.packages.selectedPackages:
