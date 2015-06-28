@@ -60,6 +60,8 @@ def fetch_uri(base_uri, cache_dir, filename, console=None, update_repo=False):
             connection = urllib2.urlopen(os.path.join(base_uri, filename))
         except ValueError:
             raise ExIndexBogus
+        filedir = path[:path.rfind("/")]
+        os.system("mkdir -p %s" % filedir)
         output = file(path, "w")
         total_size = int(connection.info()['Content-Length'])
         size = 0

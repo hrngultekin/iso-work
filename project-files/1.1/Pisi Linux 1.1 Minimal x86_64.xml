@@ -1,7 +1,7 @@
 <PardusmanProject type="install" compression="xz">
     <Title>Pisi Linux 1.1 Minimal x86_64</Title>
-    <WorkDir>/home/kaptan/some_dir</WorkDir>
-    <ReleaseFiles>/home/kaptan/some_dir/release-files/pisilinux/media-content</ReleaseFiles>
+    <WorkDir>/home/ilker/ssd/iso-work/work-folder</WorkDir>
+    <ReleaseFiles>/home/ilker/ssd/iso-work/release-files/pisilinux/media-content</ReleaseFiles>
     <PackageCollections>
         <PackageCollection default="True">
             <Id>BigStepForPisiLinuxMinimal</Id>
@@ -64,8 +64,9 @@
                     <Description>Temel Sistem</Description>
                 </Translation>
             </Translations>
-            <PackageSelection repo_uri="file:///run/media/serdar/Depo/farm-repo/x86_64/pisi-index.xml">
+            <PackageSelection repo_uri="http://farm.pisilinux.org/.nofarm-repo/x86_64/pisi-index.xml">
                 <SelectedComponent>system.base</SelectedComponent>
+                <SelectedPackage>NetworkManager</SelectedPackage>
                 <SelectedPackage>aria2</SelectedPackage>
                 <SelectedPackage>atmel-firmware</SelectedPackage>
                 <SelectedPackage>b43-firmware</SelectedPackage>
@@ -120,7 +121,6 @@
                 <SelectedPackage>module-virtualbox-guest</SelectedPackage>
                 <SelectedPackage>net-snmp</SelectedPackage>
                 <SelectedPackage>net-snmptrap</SelectedPackage>
-                <SelectedPackage>NetworkManager</SelectedPackage>
                 <SelectedPackage>ntfsprogs</SelectedPackage>
                 <SelectedPackage>ntp-client</SelectedPackage>
                 <SelectedPackage>openssh</SelectedPackage>
@@ -158,6 +158,9 @@
                 <SelectedPackage>zorg</SelectedPackage>
                 <SelectedPackage>zsh</SelectedPackage>
                 <SelectedPackage>zziplib</SelectedPackage>
+                <Package>ConsoleKit</Package>
+                <Package>DirectFB</Package>
+                <Package>ModemManager</Package>
                 <Package>aalib</Package>
                 <Package>acl</Package>
                 <Package>alsa-lib</Package>
@@ -184,7 +187,6 @@
                 <Package>cdparanoia</Package>
                 <Package>comar</Package>
                 <Package>comar-api</Package>
-                <Package>ConsoleKit</Package>
                 <Package>coreutils</Package>
                 <Package>cpio</Package>
                 <Package>cracklib</Package>
@@ -203,7 +205,6 @@
                 <Package>device-mapper-static</Package>
                 <Package>dhcpcd</Package>
                 <Package>diffutils</Package>
-                <Package>DirectFB</Package>
                 <Package>disktype</Package>
                 <Package>dnsmasq</Package>
                 <Package>e2fsprogs</Package>
@@ -259,6 +260,35 @@
                 <Package>lcms2</Package>
                 <Package>less</Package>
                 <Package>leveldb</Package>
+                <Package>libFS</Package>
+                <Package>libICE</Package>
+                <Package>libIDL</Package>
+                <Package>libSM</Package>
+                <Package>libX11</Package>
+                <Package>libXScrnSaver</Package>
+                <Package>libXau</Package>
+                <Package>libXaw</Package>
+                <Package>libXcomposite</Package>
+                <Package>libXcursor</Package>
+                <Package>libXdamage</Package>
+                <Package>libXdmcp</Package>
+                <Package>libXext</Package>
+                <Package>libXfixes</Package>
+                <Package>libXfont</Package>
+                <Package>libXft</Package>
+                <Package>libXi</Package>
+                <Package>libXinerama</Package>
+                <Package>libXmu</Package>
+                <Package>libXpm</Package>
+                <Package>libXrandr</Package>
+                <Package>libXrender</Package>
+                <Package>libXt</Package>
+                <Package>libXtst</Package>
+                <Package>libXv</Package>
+                <Package>libXxf86dga</Package>
+                <Package>libXxf86misc</Package>
+                <Package>libXxf86miscproto</Package>
+                <Package>libXxf86vm</Package>
                 <Package>libavc1394</Package>
                 <Package>libblkid</Package>
                 <Package>libcaca</Package>
@@ -279,14 +309,11 @@
                 <Package>libestr</Package>
                 <Package>libffi</Package>
                 <Package>libfontenc</Package>
-                <Package>libFS</Package>
                 <Package>libgcc</Package>
                 <Package>libgcrypt</Package>
                 <Package>libgomp</Package>
                 <Package>libgpg-error</Package>
                 <Package>libgudev1</Package>
-                <Package>libICE</Package>
-                <Package>libIDL</Package>
                 <Package>libical</Package>
                 <Package>libid3tag</Package>
                 <Package>libidn</Package>
@@ -315,7 +342,6 @@
                 <Package>librsync</Package>
                 <Package>libsdl</Package>
                 <Package>libsigc++</Package>
-                <Package>libSM</Package>
                 <Package>libsndfile</Package>
                 <Package>libsoup</Package>
                 <Package>libssh2</Package>
@@ -332,37 +358,12 @@
                 <Package>libvdpau</Package>
                 <Package>libvisual</Package>
                 <Package>libvorbis</Package>
-                <Package>libX11</Package>
                 <Package>libx86</Package>
-                <Package>libXau</Package>
-                <Package>libXaw</Package>
                 <Package>libxcb</Package>
-                <Package>libXcomposite</Package>
-                <Package>libXcursor</Package>
-                <Package>libXdamage</Package>
-                <Package>libXdmcp</Package>
-                <Package>libXext</Package>
-                <Package>libXfixes</Package>
-                <Package>libXfont</Package>
-                <Package>libXft</Package>
-                <Package>libXi</Package>
-                <Package>libXinerama</Package>
                 <Package>libxkbfile</Package>
                 <Package>libxml2</Package>
                 <Package>libxmlpp</Package>
-                <Package>libXmu</Package>
-                <Package>libXpm</Package>
-                <Package>libXrandr</Package>
-                <Package>libXrender</Package>
-                <Package>libXScrnSaver</Package>
                 <Package>libxshmfence</Package>
-                <Package>libXt</Package>
-                <Package>libXtst</Package>
-                <Package>libXv</Package>
-                <Package>libXxf86dga</Package>
-                <Package>libXxf86misc</Package>
-                <Package>libXxf86miscproto</Package>
-                <Package>libXxf86vm</Package>
                 <Package>linux-atm</Package>
                 <Package>linux-firmware</Package>
                 <Package>llvm</Package>
@@ -382,7 +383,6 @@
                 <Package>mit-kerberos</Package>
                 <Package>mkinitramfs</Package>
                 <Package>mobile-broadband-provider-info</Package>
-                <Package>ModemManager</Package>
                 <Package>module-broadcom-wl-userspace</Package>
                 <Package>module-virtualbox-guest-userspace</Package>
                 <Package>mpfr</Package>
@@ -522,7 +522,6 @@
         <SelectedPackage>xorg-video-intel</SelectedPackage>
         <SelectedPackage>xorg-video-mach64</SelectedPackage>
         <SelectedPackage>xorg-video-mga</SelectedPackage>
-        <SelectedPackage>xorg-video-modesetting</SelectedPackage>
         <SelectedPackage>xorg-video-neomagic</SelectedPackage>
         <SelectedPackage>xorg-video-nouveau</SelectedPackage>
         <SelectedPackage>xorg-video-openchrome</SelectedPackage>
