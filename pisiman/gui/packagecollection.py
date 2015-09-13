@@ -14,8 +14,9 @@ import hashlib
 import os
 import copy
 
-from PyQt4.QtCore import SIGNAL
-from PyQt4.QtGui import QDialog, QFileDialog, QListWidgetItem, QMessageBox, QPixmap
+from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QDialog, QFileDialog, QListWidgetItem, QMessageBox 
+from PyQt5.QtGui import QPixmap
 
 from gui.ui.packagecollection import Ui_PackageCollectionDialog
 from gui.packages import PackagesDialog

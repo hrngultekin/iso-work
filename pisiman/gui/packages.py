@@ -12,8 +12,9 @@
 #
 
 # Qt
-from PyQt4.QtCore import SIGNAL, Qt
-from PyQt4.QtGui import QDialog, QTreeWidgetItem, QBrush, QColor
+from PyQt5.QtCore import pyqtSignal, Qt
+from PyQt5.QtWidgets import QDialog, QTreeWidgetItem
+from PyQt5.QtGui import QBrush, QColor
 
 # UI
 from gui.ui.packages import Ui_PackagesDialog

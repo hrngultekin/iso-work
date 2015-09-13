@@ -12,11 +12,11 @@
 #
 
 # Qt
-from PyQt4.QtCore import QEventLoop
-#from PyQt4.QtGui import QDialog
+from PyQt5.QtCore import QEventLoop
+#from PyQt5.QtWidgets import QDialog
 
-from PyQt4.QtGui import QProgressDialog
-from PyQt4.QtCore import QCoreApplication
+from PyQt5.QtWidgets import QProgressDialog
+from PyQt5.QtCore import QCoreApplication
 
 class Progress:
     def __init__(self, parent):

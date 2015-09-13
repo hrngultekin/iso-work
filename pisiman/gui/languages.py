@@ -12,8 +12,8 @@
 #
 
 # Qt
-from PyQt4.QtCore import SIGNAL
-from PyQt4.QtGui import QDialog, QListWidgetItem
+from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QDialog, QListWidgetItem
 
 # UI
 from gui.ui.languages import Ui_LanguagesDialog

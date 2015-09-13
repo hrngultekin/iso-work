@@ -12,8 +12,8 @@
 #
 
 # Qt
-from PyQt4.QtCore import SIGNAL
-from PyQt4.QtGui import QWidget,QApplication
+from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QWidget,QApplication
 
 # Main form
 from gui.main import MainWindow
@@ -31,7 +31,7 @@ def gui(args):
     app.setActiveWindow(mainWindow)
 
     # Close application if there's no window
-    app.connect(app, SIGNAL('lastWindowClosed()'), app.quit)
+    app.lastWindowClosed.connect(app.quit)
 
     # Go go go!
     app.exec_()

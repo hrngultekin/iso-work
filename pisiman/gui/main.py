@@ -18,8 +18,9 @@ import tempfile
 # Qt
 import QTermWidget
 
-from PyQt4.QtGui import QIcon, QMessageBox, QMainWindow, QFileDialog, QListWidgetItem, QFont
-from PyQt4.QtCore import SIGNAL, QFile, Qt
+from PyQt5.QtWidgets import QMessageBox, QMainWindow, QFileDialog, QListWidgetItem
+from PyQt5.QtGui import QIcon, QFont
+from PyQt5.QtCore import pyqtSignal, QFile, Qt
 
 
 # UI
@@ -76,32 +77,32 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.collections = None
 
         # File menu
-        self.connect(self.actionNew, SIGNAL("activated()"), self.slotNew)
-        self.connect(self.actionOpen, SIGNAL("activated()"), self.slotOpen)
-        self.connect(self.actionSave, SIGNAL("activated()"), self.slotSave)
-        self.connect(self.actionSaveAs, SIGNAL("activated()"), self.slotSaveAs)
-        self.connect(self.actionExit, SIGNAL("activated()"), self.close)
+        self.actionNew.triggered.connect(self.slotNew)
+        self.actionOpen.triggered.connect(self.slotOpen)
+        self.actionSave.triggered.connect(self.slotSave)
+	self.actionSaveAs.triggered.connect(self.slotSaveAs)
+        self.actionExit.triggered.connect(self.close)
 
         # Project menu
-        self.connect(self.actionUpdateRepo, SIGNAL("activated()"), self.slotUpdateRepo)
-        self.connect(self.actionLanguages, SIGNAL("activated()"), self.slotSelectLanguages)
-        self.connect(self.actionPackages, SIGNAL("activated()"), self.slotSelectPackages)
-        self.connect(self.actionInstallationImagePackages, SIGNAL("activated()"), self.slotSelectInstallImagePackages)
-        self.connect(self.actionMakeImage, SIGNAL("activated()"), self.slotMakeImage)
+        self.actionUpdateRepo.triggered.connect(self.slotUpdateRepo)
+        self.actionLanguages.triggered.connect(self.slotSelectLanguages)
+        self.actionPackages.triggered.connect(self.slotSelectPackages)
+        self.actionInstallationImagePackages.triggered.connect(self.slotSelectInstallImagePackages)
+        self.actionMakeImage.triggered.connect(self.slotMakeImage)
 
         # Browse buttons
-        self.connect(self.pushBrowseRepository, SIGNAL("clicked()"), self.slotBrowseRepository)
-        self.connect(self.pushBrowseWorkFolder, SIGNAL("clicked()"), self.slotBrowseWorkFolder)
-        self.connect(self.pushBrowsePluginPackage, SIGNAL("clicked()"), self.slotBrowsePluginPackage)
-        self.connect(self.pushBrowseReleaseFiles, SIGNAL("clicked()"), self.slotBrowseReleaseFiles)
+        self.pushBrowseRepository.clicked.connect(self.slotBrowseRepository)
+        self.pushBrowseWorkFolder.clicked.connect(self.slotBrowseWorkFolder)
+        self.pushBrowsePluginPackage.clicked.connect(self.slotBrowsePluginPackage)
+        self.pushBrowseReleaseFiles.clicked.connect(self.slotBrowseReleaseFiles)
 
         # Change Package Selection
-        self.connect(self.pushAddCollection, SIGNAL("clicked()"),self.slotAddPackageCollection)
-        self.connect(self.pushModifyCollection, SIGNAL("clicked()"),self.slotModifyPackageCollection)
-        self.connect(self.pushRemoveCollection, SIGNAL("clicked()"),self.slotRemovePackageCollection)
-        self.connect(self.pushSetDefaultCollection, SIGNAL("clicked()"),self.slotSetDefaultCollection)
-        self.connect(self.checkCollection, SIGNAL("stateChanged(int)"), self.slotShowPackageCollection)
-        self.connect(self.listPackageCollection, SIGNAL("itemClicked(QListWidgetItem *)"),self.slotClickedCollection)
+        self.pushAddCollection.clicked.connect(self.slotAddPackageCollection)
+        self.pushModifyCollection.clicked.connect(self.slotModifyPackageCollection)
+        self.pushRemoveCollection.clicked.connect(self.slotRemovePackageCollection)
+        self.pushSetDefaultCollection.clicked.connect(self.slotSetDefaultCollection)
+        self.checkCollection.stateChanged[int].connect(self.slotShowPackageCollection)
+        self.listPackageCollection.itemClicked[QListWidgetItem].connect(self.slotClickedCollection)
 
         # Initialize
         self.initialize()

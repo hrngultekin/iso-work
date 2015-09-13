@@ -2,109 +2,94 @@
 
 # Form implementation generated from reading ui file 'gui/ui/rawlanguages.ui'
 #
-# Created: Sun Aug 10 16:16:43 2014
-#      by: PyQt4 UI code generator 4.9.6
+# Created by: PyQt5 UI code generator 5.4.2
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt4 import QtCore, QtGui
-
-try:
-    _fromUtf8 = QtCore.QString.fromUtf8
-except AttributeError:
-    def _fromUtf8(s):
-        return s
-
-try:
-    _encoding = QtGui.QApplication.UnicodeUTF8
-    def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig, _encoding)
-except AttributeError:
-    def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig)
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_LanguagesDialog(object):
     def setupUi(self, LanguagesDialog):
-        LanguagesDialog.setObjectName(_fromUtf8("LanguagesDialog"))
+        LanguagesDialog.setObjectName("LanguagesDialog")
         LanguagesDialog.resize(467, 350)
-        self.gridLayout = QtGui.QGridLayout(LanguagesDialog)
-        self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
-        self.label = QtGui.QLabel(LanguagesDialog)
-        self.label.setObjectName(_fromUtf8("label"))
+        self.gridLayout = QtWidgets.QGridLayout(LanguagesDialog)
+        self.gridLayout.setObjectName("gridLayout")
+        self.label = QtWidgets.QLabel(LanguagesDialog)
+        self.label.setObjectName("label")
         self.gridLayout.addWidget(self.label, 0, 0, 2, 1)
-        self.label_2 = QtGui.QLabel(LanguagesDialog)
-        self.label_2.setObjectName(_fromUtf8("label_2"))
+        self.label_2 = QtWidgets.QLabel(LanguagesDialog)
+        self.label_2.setObjectName("label_2")
         self.gridLayout.addWidget(self.label_2, 0, 2, 1, 1)
-        self.selectedListWidget = QtGui.QListWidget(LanguagesDialog)
-        self.selectedListWidget.setObjectName(_fromUtf8("selectedListWidget"))
+        self.selectedListWidget = QtWidgets.QListWidget(LanguagesDialog)
+        self.selectedListWidget.setObjectName("selectedListWidget")
         self.gridLayout.addWidget(self.selectedListWidget, 1, 2, 5, 1)
-        self.availableListWidget = QtGui.QListWidget(LanguagesDialog)
-        self.availableListWidget.setObjectName(_fromUtf8("availableListWidget"))
+        self.availableListWidget = QtWidgets.QListWidget(LanguagesDialog)
+        self.availableListWidget.setObjectName("availableListWidget")
         self.gridLayout.addWidget(self.availableListWidget, 2, 0, 4, 1)
-        spacerItem = QtGui.QSpacerItem(49, 153, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        spacerItem = QtWidgets.QSpacerItem(49, 153, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.gridLayout.addItem(spacerItem, 2, 1, 1, 1)
-        spacerItem1 = QtGui.QSpacerItem(21, 153, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        spacerItem1 = QtWidgets.QSpacerItem(21, 153, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.gridLayout.addItem(spacerItem1, 2, 3, 1, 1)
-        self.addButton = QtGui.QPushButton(LanguagesDialog)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        self.addButton = QtWidgets.QPushButton(LanguagesDialog)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.addButton.sizePolicy().hasHeightForWidth())
         self.addButton.setSizePolicy(sizePolicy)
-        self.addButton.setText(_fromUtf8(""))
+        self.addButton.setText("")
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/raw/pics/go-next.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(":/raw/pics/go-next.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.addButton.setIcon(icon)
-        self.addButton.setObjectName(_fromUtf8("addButton"))
+        self.addButton.setObjectName("addButton")
         self.gridLayout.addWidget(self.addButton, 3, 1, 1, 1)
-        self.upButton = QtGui.QPushButton(LanguagesDialog)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        self.upButton = QtWidgets.QPushButton(LanguagesDialog)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.upButton.sizePolicy().hasHeightForWidth())
         self.upButton.setSizePolicy(sizePolicy)
-        self.upButton.setText(_fromUtf8(""))
+        self.upButton.setText("")
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(_fromUtf8(":/raw/pics/go-up.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon1.addPixmap(QtGui.QPixmap(":/raw/pics/go-up.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.upButton.setIcon(icon1)
-        self.upButton.setObjectName(_fromUtf8("upButton"))
+        self.upButton.setObjectName("upButton")
         self.gridLayout.addWidget(self.upButton, 3, 3, 1, 1)
-        self.removeButton = QtGui.QPushButton(LanguagesDialog)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        self.removeButton = QtWidgets.QPushButton(LanguagesDialog)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.removeButton.sizePolicy().hasHeightForWidth())
         self.removeButton.setSizePolicy(sizePolicy)
-        self.removeButton.setText(_fromUtf8(""))
+        self.removeButton.setText("")
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap(_fromUtf8(":/raw/pics/go-previous.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon2.addPixmap(QtGui.QPixmap(":/raw/pics/go-previous.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.removeButton.setIcon(icon2)
-        self.removeButton.setObjectName(_fromUtf8("removeButton"))
+        self.removeButton.setObjectName("removeButton")
         self.gridLayout.addWidget(self.removeButton, 4, 1, 1, 1)
-        self.downButton = QtGui.QPushButton(LanguagesDialog)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        self.downButton = QtWidgets.QPushButton(LanguagesDialog)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.downButton.sizePolicy().hasHeightForWidth())
         self.downButton.setSizePolicy(sizePolicy)
-        self.downButton.setText(_fromUtf8(""))
+        self.downButton.setText("")
         icon3 = QtGui.QIcon()
-        icon3.addPixmap(QtGui.QPixmap(_fromUtf8(":/raw/pics/go-down.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon3.addPixmap(QtGui.QPixmap(":/raw/pics/go-down.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.downButton.setIcon(icon3)
-        self.downButton.setObjectName(_fromUtf8("downButton"))
+        self.downButton.setObjectName("downButton")
         self.gridLayout.addWidget(self.downButton, 4, 3, 1, 1)
-        spacerItem2 = QtGui.QSpacerItem(49, 68, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        spacerItem2 = QtWidgets.QSpacerItem(49, 68, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.gridLayout.addItem(spacerItem2, 5, 1, 1, 1)
-        spacerItem3 = QtGui.QSpacerItem(21, 68, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        spacerItem3 = QtWidgets.QSpacerItem(21, 68, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.gridLayout.addItem(spacerItem3, 5, 3, 1, 1)
-        self.buttonBox = QtGui.QDialogButtonBox(LanguagesDialog)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed)
+        self.buttonBox = QtWidgets.QDialogButtonBox(LanguagesDialog)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.buttonBox.sizePolicy().hasHeightForWidth())
         self.buttonBox.setSizePolicy(sizePolicy)
-        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
-        self.buttonBox.setObjectName(_fromUtf8("buttonBox"))
+        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox.setObjectName("buttonBox")
         self.gridLayout.addWidget(self.buttonBox, 6, 2, 1, 1)
 
         self.retranslateUi(LanguagesDialog)
@@ -115,8 +100,9 @@ class Ui_LanguagesDialog(object):
         LanguagesDialog.setTabOrder(self.downButton, self.buttonBox)
 
     def retranslateUi(self, LanguagesDialog):
-        LanguagesDialog.setWindowTitle(_translate("LanguagesDialog", "Languages", None))
-        self.label.setText(_translate("LanguagesDialog", "Available:", None))
-        self.label_2.setText(_translate("LanguagesDialog", "Selected:", None))
+        _translate = QtCore.QCoreApplication.translate
+        LanguagesDialog.setWindowTitle(_translate("LanguagesDialog", "Languages"))
+        self.label.setText(_translate("LanguagesDialog", "Available:"))
+        self.label_2.setText(_translate("LanguagesDialog", "Selected:"))
 
 import raw_rc
