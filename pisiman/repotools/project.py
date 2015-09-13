@@ -28,8 +28,8 @@ def _(x):
 PYTHON_VER = ".".join(platform.python_version_tuple()[0:2])
 
 QT_PREFIX = "usr"
-if os.path.exists("/usr/qt/4/lib/libQtCore.so"):
-    QT_PREFIX += "/qt/4"
+if os.path.exists("/usr/lib/qt5/libQtCore.so"):
+    QT_PREFIX += "/lib/qt5"
 
 default_live_exclude_list = """
 lib/rcscripts/

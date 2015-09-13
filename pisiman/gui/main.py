@@ -131,10 +131,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         if not filename:
             filename = QFileDialog.getOpenFileName(self, _("Select project file"), ".", "*.xml")
+            filename=filename[0]
         if filename:
             self.project = Project()
+            
             try:
-                self.project.open(unicode(filename))
+                self.project.open(filename)
             except ExProjectMissing:
                 QMessageBox.warning(self, self.title, _("Project file is missing."))
                 return
@@ -158,6 +160,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             "Save As..." menu item fires this function.
         """
         filename = QFileDialog.getSaveFileName(self, _("Save project"), os.getcwd(), "*.xml")
+        filename=filename[0]
         if filename:
             self.project.filename = unicode(filename)
             self.slotSave()
@@ -167,6 +170,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             Browse repository button fires this function.
         """
         filename = QFileDialog.getOpenFileName(self, _("Select repository index"), ".", "pisi-index.xml*")
+        filename=filename[0]
         if filename:
             filename = unicode(filename)
             if filename.startswith("/"):
@@ -178,6 +182,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             Browse plugin package button fires this function.
         """
         filename = QFileDialog.getOpenFileName(self, _("Select plugin package"), ".", "*.pisi")
+        filename=filename[0]
         if filename:
             self.linePluginPackage.setText(filename)
 

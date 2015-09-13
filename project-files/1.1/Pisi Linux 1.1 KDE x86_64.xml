@@ -66,6 +66,11 @@
             </Translations>
             <PackageSelection repo_uri="file:///run/media/serdar/Depo/farm-repo/x86_64/pisi-index.xml">
                 <SelectedComponent>system.base</SelectedComponent>
+                <SelectedPackage>NetworkManager-openconnect</SelectedPackage>
+                <SelectedPackage>NetworkManager-openvpn</SelectedPackage>
+                <SelectedPackage>NetworkManager-pptp</SelectedPackage>
+                <SelectedPackage>NetworkManager-vpnc</SelectedPackage>
+                <SelectedPackage>QtCurve-Gtk2</SelectedPackage>
                 <SelectedPackage>alsa-firmware</SelectedPackage>
                 <SelectedPackage>alsa-plugins</SelectedPackage>
                 <SelectedPackage>alsa-plugins-pulseaudio</SelectedPackage>
@@ -300,10 +305,6 @@
                 <SelectedPackage>mlocate</SelectedPackage>
                 <SelectedPackage>msttcorefonts</SelectedPackage>
                 <SelectedPackage>networkmanagement</SelectedPackage>
-                <SelectedPackage>NetworkManager-openconnect</SelectedPackage>
-                <SelectedPackage>NetworkManager-openvpn</SelectedPackage>
-                <SelectedPackage>NetworkManager-pptp</SelectedPackage>
-                <SelectedPackage>NetworkManager-vpnc</SelectedPackage>
                 <SelectedPackage>ntp-client</SelectedPackage>
                 <SelectedPackage>obexftp</SelectedPackage>
                 <SelectedPackage>okular</SelectedPackage>
@@ -332,7 +333,6 @@
                 <SelectedPackage>powertop</SelectedPackage>
                 <SelectedPackage>print-manager</SelectedPackage>
                 <SelectedPackage>qt-recordmydesktop</SelectedPackage>
-                <SelectedPackage>QtCurve-Gtk2</SelectedPackage>
                 <SelectedPackage>quickformat</SelectedPackage>
                 <SelectedPackage>rar</SelectedPackage>
                 <SelectedPackage>rdate</SelectedPackage>
@@ -414,6 +414,11 @@
                 <SelectedPackage>zemberek-office</SelectedPackage>
                 <SelectedPackage>zorg</SelectedPackage>
                 <SelectedPackage>zpspell</SelectedPackage>
+                <Package>ConsoleKit</Package>
+                <Package>DirectFB</Package>
+                <Package>ModemManager</Package>
+                <Package>NetworkManager</Package>
+                <Package>SuiteSparse</Package>
                 <Package>a52dec</Package>
                 <Package>aalib</Package>
                 <Package>acl</Package>
@@ -469,7 +474,6 @@
                 <Package>colord</Package>
                 <Package>comar</Package>
                 <Package>comar-api</Package>
-                <Package>ConsoleKit</Package>
                 <Package>coreutils</Package>
                 <Package>cpio</Package>
                 <Package>cracklib</Package>
@@ -498,7 +502,6 @@
                 <Package>dhcpcd</Package>
                 <Package>dialog</Package>
                 <Package>diffutils</Package>
-                <Package>DirectFB</Package>
                 <Package>disktype</Package>
                 <Package>djbfft</Package>
                 <Package>djview4</Package>
@@ -659,6 +662,37 @@
                 <Package>lensfun</Package>
                 <Package>less</Package>
                 <Package>leveldb</Package>
+                <Package>libFS</Package>
+                <Package>libICE</Package>
+                <Package>libIDL</Package>
+                <Package>libSM</Package>
+                <Package>libX11</Package>
+                <Package>libXScrnSaver</Package>
+                <Package>libXau</Package>
+                <Package>libXaw</Package>
+                <Package>libXcomposite</Package>
+                <Package>libXcursor</Package>
+                <Package>libXdamage</Package>
+                <Package>libXdmcp</Package>
+                <Package>libXext</Package>
+                <Package>libXfixes</Package>
+                <Package>libXfont</Package>
+                <Package>libXft</Package>
+                <Package>libXi</Package>
+                <Package>libXinerama</Package>
+                <Package>libXmu</Package>
+                <Package>libXpm</Package>
+                <Package>libXrandr</Package>
+                <Package>libXrender</Package>
+                <Package>libXres</Package>
+                <Package>libXt</Package>
+                <Package>libXtst</Package>
+                <Package>libXv</Package>
+                <Package>libXvMC</Package>
+                <Package>libXxf86dga</Package>
+                <Package>libXxf86misc</Package>
+                <Package>libXxf86miscproto</Package>
+                <Package>libXxf86vm</Package>
                 <Package>libaio</Package>
                 <Package>libao</Package>
                 <Package>libarchive</Package>
@@ -720,7 +754,6 @@
                 <Package>libffi</Package>
                 <Package>libfontenc</Package>
                 <Package>libfreebob</Package>
-                <Package>libFS</Package>
                 <Package>libgcc</Package>
                 <Package>libgcrypt</Package>
                 <Package>libgda</Package>
@@ -736,8 +769,6 @@
                 <Package>libgssglue</Package>
                 <Package>libgudev1</Package>
                 <Package>libgusb</Package>
-                <Package>libICE</Package>
-                <Package>libIDL</Package>
                 <Package>libical</Package>
                 <Package>libid3tag</Package>
                 <Package>libidn</Package>
@@ -824,7 +855,6 @@
                 <Package>libsecret</Package>
                 <Package>libshout</Package>
                 <Package>libsigc++</Package>
-                <Package>libSM</Package>
                 <Package>libsndfile</Package>
                 <Package>libsoup</Package>
                 <Package>libsoup-gnome</Package>
@@ -861,40 +891,13 @@
                 <Package>libwpd</Package>
                 <Package>libwpg</Package>
                 <Package>libwps</Package>
-                <Package>libX11</Package>
                 <Package>libx86</Package>
-                <Package>libXau</Package>
-                <Package>libXaw</Package>
                 <Package>libxcb</Package>
-                <Package>libXcomposite</Package>
-                <Package>libXcursor</Package>
-                <Package>libXdamage</Package>
-                <Package>libXdmcp</Package>
-                <Package>libXext</Package>
-                <Package>libXfixes</Package>
-                <Package>libXfont</Package>
-                <Package>libXft</Package>
-                <Package>libXi</Package>
-                <Package>libXinerama</Package>
                 <Package>libxkbfile</Package>
                 <Package>libxml2</Package>
                 <Package>libxmlpp</Package>
-                <Package>libXmu</Package>
-                <Package>libXpm</Package>
-                <Package>libXrandr</Package>
-                <Package>libXrender</Package>
-                <Package>libXres</Package>
-                <Package>libXScrnSaver</Package>
                 <Package>libxshmfence</Package>
                 <Package>libxslt</Package>
-                <Package>libXt</Package>
-                <Package>libXtst</Package>
-                <Package>libXv</Package>
-                <Package>libXvMC</Package>
-                <Package>libXxf86dga</Package>
-                <Package>libXxf86misc</Package>
-                <Package>libXxf86miscproto</Package>
-                <Package>libXxf86vm</Package>
                 <Package>libyaml</Package>
                 <Package>libzeitgeist</Package>
                 <Package>libzip</Package>
@@ -935,7 +938,6 @@
                 <Package>mjpegtools</Package>
                 <Package>mkinitramfs</Package>
                 <Package>mobile-broadband-provider-info</Package>
-                <Package>ModemManager</Package>
                 <Package>module-virtualbox-guest</Package>
                 <Package>module-virtualbox-guest-userspace</Package>
                 <Package>mpfr</Package>
@@ -956,7 +958,6 @@
                 <Package>net-tools</Package>
                 <Package>netpbm</Package>
                 <Package>nettle</Package>
-                <Package>NetworkManager</Package>
                 <Package>nfs-utils</Package>
                 <Package>normalize</Package>
                 <Package>notify-python</Package>
@@ -1127,7 +1128,6 @@
                 <Package>startup-notification</Package>
                 <Package>stoken</Package>
                 <Package>strigi</Package>
-                <Package>SuiteSparse</Package>
                 <Package>sysfsutils</Package>
                 <Package>syslinux</Package>
                 <Package>system-config-printer</Package>
