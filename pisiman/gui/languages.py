@@ -53,12 +53,12 @@ class LanguagesDialog(QDialog, Ui_LanguagesDialog):
         self.languages = languages
 
         # Ok/cancel buttons
-        self.connect(self.buttonBox, SIGNAL("accepted()"), self.accept)
-        self.connect(self.buttonBox, SIGNAL("rejected()"), self.reject)
-        self.connect(self.upButton, SIGNAL("clicked()"), self.buttonUpClicked)
-        self.connect(self.downButton, SIGNAL("clicked()"), self.buttonDownClicked)
-        self.connect(self.addButton, SIGNAL("clicked()"), self.buttonAddClicked)
-        self.connect(self.removeButton, SIGNAL("clicked()"), self.buttonRemoveClicked)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+        self.upButton.clicked.connect(self.buttonUpClicked)
+        self.downButton.clicked.connect(self.buttonDownClicked)
+        self.addButton.clicked.connect(self.buttonAddClicked)
+        self.removeButton.clicked.connect(self.buttonRemoveClicked)
 
         # Go go go!
         self.initialize()

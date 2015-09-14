@@ -51,7 +51,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, args):
         QMainWindow.__init__(self)
         self.setupUi(self)
-        self.title = "Pardusman"
+        self.title = "Pisiman"
         # Terminal
 
         self.terminal = QTermWidget.QTermWidget()
