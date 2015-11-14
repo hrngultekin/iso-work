@@ -97,10 +97,10 @@ class PackagesDialog(QDialog, Ui_PackagesDialog):
         self.comboFilter.currentIndexChanged[int].connect(self.slotComboFilter)
 
         # Package/Component changes
-        self.treeComponents.currentItemChanged[QTreeWidgetItem *,QTreeWidgetItem *].connect(self.slotSelectComponent)
-        self.treeComponents.itemClicked[QTreeWidgetItem *, int].connect(self.slotClickComponent)
-        self.treePackages.currentItemChanged[QTreeWidgetItem *,QTreeWidgetItem *].connect(self.slotSelectPackage)
-        self.treePackages.itemClicked[QTreeWidgetItem *, int].connect(self.slotClickPackage)
+        self.treeComponents.currentItemChanged[QTreeWidgetItem ,QTreeWidgetItem ].connect(self.slotSelectComponent)
+        self.treeComponents.itemClicked[QTreeWidgetItem , int].connect(self.slotClickComponent)
+        self.treePackages.currentItemChanged[QTreeWidgetItem ,QTreeWidgetItem ].connect(self.slotSelectPackage)
+        self.treePackages.itemClicked[QTreeWidgetItem , int].connect(self.slotClickPackage)
 
         self.subcomponents = False
         self.component_only = False
