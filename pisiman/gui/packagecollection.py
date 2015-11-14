@@ -44,14 +44,14 @@ class PackageCollectionDialog(QDialog, Ui_PackageCollectionDialog):
         else:
             self.tmpCollection = PackageCollection(packages=PackageSet(self.repo_uri))
 
-        self.connect(self.titleText, SIGNAL("textChanged(const QString &)"), self.titleChanged)
-        self.connect(self.descriptionText, SIGNAL("textChanged()"), self.descriptionChanged)
-        self.connect(self.languagesCombo, SIGNAL("currentIndexChanged(int)"), self.updateTranslations)
-        self.connect(self.packagesButton, SIGNAL("clicked()"), self.slotSelectPackages)
-        self.connect(self.selectIcon, SIGNAL("clicked()"), self.slotSelectIcon)
-        self.connect(self.clearIcon, SIGNAL("clicked()"), self.slotClearIcon)
-        self.connect(self.buttonBox, SIGNAL("accepted()"), self.accept)
-        self.connect(self.buttonBox, SIGNAL("rejected()"), self.reject)
+        self.titleText.textChanged[str].connect(self.titleChanged)
+        self.descriptionText.textChanged.connect(self.descriptionChanged)
+        self.languagesCombo.currentIndexChanged[int].connect(self.updateTranslations)
+        self.packagesButton.clicked.connect(self.slotSelectPackages)
+        self.selectIcon.clicked.connect(self.slotSelectIcon)
+        self.clearIcon.clicked.connect(self.slotClearIcon)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
         self.fillContent()
 
     def fillContent(self):

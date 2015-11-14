@@ -87,20 +87,20 @@ class PackagesDialog(QDialog, Ui_PackagesDialog):
         self.all_packages = []
 
         # Search widget
-        self.connect(self.searchPackage, SIGNAL("textChanged(const QString &)"), self.slotSearchPackage)
+        self.searchPackage.textChanged[str].connect(self.slotSearchPackage)
 
         # Ok/cancel buttons
-        self.connect(self.buttonBox, SIGNAL("accepted()"), self.accept)
-        self.connect(self.buttonBox, SIGNAL("rejected()"), self.reject)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
 
         # Filter combo
-        self.connect(self.comboFilter, SIGNAL("currentIndexChanged(int)"), self.slotComboFilter)
+        self.comboFilter.currentIndexChanged[int].connect(self.slotComboFilter)
 
         # Package/Component changes
-        self.connect(self.treeComponents, SIGNAL("currentItemChanged(QTreeWidgetItem *,QTreeWidgetItem *)"), self.slotSelectComponent)
-        self.connect(self.treeComponents, SIGNAL("itemClicked(QTreeWidgetItem *, int)"), self.slotClickComponent)
-        self.connect(self.treePackages, SIGNAL("currentItemChanged(QTreeWidgetItem *,QTreeWidgetItem *)"), self.slotSelectPackage)
-        self.connect(self.treePackages, SIGNAL("itemClicked(QTreeWidgetItem *, int)"), self.slotClickPackage)
+        self.treeComponents.currentItemChanged[QTreeWidgetItem *,QTreeWidgetItem *].connect(self.slotSelectComponent)
+        self.treeComponents.itemClicked[QTreeWidgetItem *, int].connect(self.slotClickComponent)
+        self.treePackages.currentItemChanged[QTreeWidgetItem *,QTreeWidgetItem *].connect(self.slotSelectPackage)
+        self.treePackages.itemClicked[QTreeWidgetItem *, int].connect(self.slotClickPackage)
 
         self.subcomponents = False
         self.component_only = False
