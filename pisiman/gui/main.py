@@ -438,7 +438,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         missing_components, missing_packages = self.project.get_missing()
         if len(missing_components):
             print missing_components
-            QMessageBox.warning(self, self.title, _("There are missing components. Removing."))
+            #düzelt
+            #QMessageBox.warning(self, self.title, _("There are missing components. Removing."))
             for component in missing_components:
                 if component in self.project.selected_components:
                     self.project.selected_components.remove(component)
