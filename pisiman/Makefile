@@ -11,3 +11,4 @@ clean:
 	rm -rf gui/ui/languages.py
 	rm -rf gui/ui/packages.py
 	rm -rf gui/ui/packagecollections.py
+	rm -rf gui/ui/raw_rc.py
