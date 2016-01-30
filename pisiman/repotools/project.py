@@ -246,6 +246,7 @@ class Project:
                     selectedPackages.append(tag.firstChild().data())
                 for tag in node.tags("Package"):
                     allPackages.append(tag.firstChild().data())
+                #print repoURI, "\n", selectedComponents, "\n", selectedPackages, "\n", allPackages
                 return (repoURI, selectedComponents, selectedPackages, allPackages)
             return None
 
@@ -306,8 +307,7 @@ class Project:
         else:
             packageSelectionTag = doc.getTag("PackageSelection")
             if packageSelectionTag:
-                self.repo_uri, self.selected_components, \
-                self.selected_packages, self.all_packages= __packageSelection(packageSelectionTag)
+                self.repo_uri, self.selected_components, self.selected_packages, self.all_packages= __packageSelection(packageSelectionTag)
 
             self.selected_components.sort()
             self.selected_packages.sort()
@@ -328,6 +328,10 @@ class Project:
             self.selected_install_image_components.sort()
             self.selected_install_image_packages.sort()
             self.all_install_image_packages.sort()
+            self.selected_components += self.selected_install_image_components
+            self.selected_components.sort()
+            self.selected_packages += self.selected_install_image_packages
+            self.selected_packages.sort()
 
     def save(self, filename=None):
         # Save the data into filename as pardusman project file
@@ -503,7 +507,7 @@ class Project:
 
                 packages.sort()
                 collection.packages.allPackages = packages
-            #self.all_packages.extend(packages)
+            self.all_packages.extend(packages)
         else:
             for component in self.selected_components:
                 if component not in repo.components:
@@ -538,6 +542,7 @@ class Project:
 
         packages.sort()
         self.all_install_image_packages = packages
+        
 
     def image_repo_dir(self, clean=False):
         return self._get_dir("image_repo", clean)

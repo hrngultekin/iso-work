@@ -284,6 +284,25 @@ def setup_live_kdm(project):
     else:
         print "*** %s doesn't exist, setup_live_kdm() returned" % kdmrc_path
 
+def setup_live_sddm(project):
+    image_dir = project.image_dir()
+    sddmconf_path = os.path.join(image_dir, "etc/sddm.conf")
+    if os.path.exists(sddmconf_path):
+        lines = []
+        for line in open(sddmconf_path, "r").readlines():
+            if line.startswith("User"):
+                lines.append("User=pisi\n")
+            elif line.startswith("Session"):
+                lines.append("Session=/usr/share/xsessions/plasma-mediacenter\n") #this code may be have an error
+            #elif line.startswith("#ServerTimeout="):
+            #    lines.append("ServerTimeout=60\n")
+            else:
+                lines.append(line)
+        open(sddmconf_path, "w").write("".join(lines))
+    else:
+        print "*** %s doesn't exist, setup_live_sddm() returned" % sddmconf_path
+
+
 def setup_live_policykit_conf(project):
     policykit_conf_tmpl = """[Live CD Rules]
 Identity=unix-user:pisi
@@ -468,6 +487,7 @@ def make_image(project):
         run('umount %s/sys' % image_dir, ignore_error=True)
         image_dir = project.image_dir(clean=True)
         run('pisi --yes-all -D"%s" ar pisilinux-install %s --ignore-check' % (image_dir, repo_dir + "/pisi-index.xml.bz2"))
+        print "project type = ",project.type
         if project.type == "install":
             if project.all_install_image_packages:
                 install_image_packages = " ".join(project.all_install_image_packages)
@@ -544,7 +564,7 @@ def make_image(project):
 
 
         if project.type != "install" and ("kde-workspace" in project.all_packages):
-            setup_live_kdm(project)
+            setup_live_sddm(project)            #setup_live_sddm olarak değiştirildi
             setup_live_policykit_conf(project)
 
         if project.type == "install":

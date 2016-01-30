@@ -45,8 +45,8 @@ class PackageCollectionDialog(QDialog, Ui_PackageCollectionDialog):
             self.tmpCollection = PackageCollection(packages=PackageSet(self.repo_uri))
 
         self.titleText.textChanged[str].connect(self.titleChanged)
-        self.descriptionText.textChanged.connect(self.descriptionChanged)
         self.languagesCombo.currentIndexChanged[int].connect(self.updateTranslations)
+        self.descriptionText.textChanged.connect(self.descriptionChanged)
         self.packagesButton.clicked.connect(self.slotSelectPackages)
         self.selectIcon.clicked.connect(self.slotSelectIcon)
         self.clearIcon.clicked.connect(self.slotClearIcon)
@@ -79,19 +79,22 @@ class PackageCollectionDialog(QDialog, Ui_PackageCollectionDialog):
                 self.icon.setPixmap(QPixmap(os.path.join(os.getcwd(), "icons", self.tmpCollection.icon)))
 
     def updateTranslations(self, currentIndex):
-        code = unicode(self.languagesCombo.itemData(currentIndex).toString())
+        code = unicode(self.languagesCombo.itemData(currentIndex))
         if code and self.tmpCollection.translations[code]:
             self.titleText.setText(unicode(self.tmpCollection.translations[code][0]))
             self.descriptionText.setPlainText(unicode(self.tmpCollection.translations[code][1]))
 
     def titleChanged(self, text):
-        code = str(self.languagesCombo.itemData(self.languagesCombo.currentIndex()).toString())
+        code = str(self.languagesCombo.itemData(self.languagesCombo.currentIndex()))
         if code and self.tmpCollection.translations[code]:
             translations = self.tmpCollection.translations[code]
             self.tmpCollection.translations[code] = (unicode(text), translations[1])
 
     def descriptionChanged(self):
-        code = str(self.languagesCombo.itemData(self.languagesCombo.currentIndex()).toString())
+        if not self.languagesCombo.itemData(self.languagesCombo.currentIndex()):
+            return
+        
+        code = str(self.languagesCombo.itemData(self.languagesCombo.currentIndex()))
         if code and self.tmpCollection.translations[code]:
             translations = self.tmpCollection.translations[code]
             self.tmpCollection.translations[code] = (translations[0], unicode(self.descriptionText.toPlainText()))
@@ -107,7 +110,8 @@ class PackageCollectionDialog(QDialog, Ui_PackageCollectionDialog):
     def slotSelectIcon(self):
         iconPath = QFileDialog.getOpenFileName(self, _("Select Collection Icon"),
                                                os.path.join(os.getcwd(), "icons"),
-                                               "*.png")
+                                               "*.png")[0]
+        
         if iconPath:
             if self.tmpCollection:
                 self.tmpCollection.icon = unicode(os.path.basename(unicode(iconPath)))

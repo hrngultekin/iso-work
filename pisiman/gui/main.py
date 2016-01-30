@@ -437,21 +437,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         missing_components, missing_packages = self.project.get_missing()
         if len(missing_components):
-            print missing_components
-            #düzelt
-            #QMessageBox.warning(self, self.title, _("There are missing components. Removing."))
+            QMessageBox.warning(self, self.title, _("There are missing components: {}. Removing.".format(", ".join(missing_components))))
             for component in missing_components:
                 if component in self.project.selected_components:
                     self.project.selected_components.remove(component)
+                    self.project.selected_install_image_components.remove(component)
             return self.updateRepo(update_repo=False)
-            self.updateRepo(update_repo=False)
+            #self.updateRepo(update_repo=False)
 
         if len(missing_packages):
-            print missing_packages
-            QMessageBox.warning(self, self.title, _("There are missing packages. Removing."))
+            QMessageBox.warning(self, self.title, _("There are missing packages: {}. Removing.".format(", ".join(missing_packages))))
             for package in missing_packages:
                 if package in self.project.selected_packages:
                     self.project.selected_packages.remove(package)
+                    self.project.selected_install_image_packages.remove(package)
             return self.updateRepo(update_repo=False)
 
         self.progress.finished()
