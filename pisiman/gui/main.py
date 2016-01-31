@@ -437,6 +437,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         missing_components, missing_packages = self.project.get_missing()
         if len(missing_components):
+            print("missing components : {}".format(missing_components))
             QMessageBox.warning(self, self.title, _("There are missing components: {}. Removing.".format(", ".join(missing_components))))
             for component in missing_components:
                 if component in self.project.selected_components:
@@ -446,6 +447,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             #self.updateRepo(update_repo=False)
 
         if len(missing_packages):
+            print("missing packages : {}".format(missing_packages))
             QMessageBox.warning(self, self.title, _("There are missing packages: {}. Removing.".format(", ".join(missing_packages))))
             for package in missing_packages:
                 if package in self.project.selected_packages:

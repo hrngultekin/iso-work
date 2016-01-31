@@ -290,7 +290,9 @@ def setup_live_sddm(project):
     if os.path.exists(sddmconf_path):
         lines = []
         for line in open(sddmconf_path, "r").readlines():
-            if line.startswith("User"):
+            if line.startswith("Relogin"):
+                lines.append("Relogin=true")
+            elif line.startswith("User"):
                 lines.append("User=pisi\n")
             elif line.startswith("Session"):
                 lines.append("Session=/usr/share/xsessions/plasma-mediacenter\n") #this code may be have an error
