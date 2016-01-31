@@ -434,6 +434,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return False
         else:
             self.progress.finished()
+       
 
         missing_components, missing_packages = self.project.get_missing()
         if len(missing_components):

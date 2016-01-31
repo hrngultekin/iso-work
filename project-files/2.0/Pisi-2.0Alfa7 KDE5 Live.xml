@@ -1,4 +1,4 @@
-<PardusmanProject type="install" compression="xz">
+<PardusmanProject type="live" compression="xz">
     <Title>Pisi Linux 2.0 Alfa7 KDE5 New Cat x86_64 Live</Title>
     <WorkDir>/home/harun/work/isowork</WorkDir>
     <ReleaseFiles>/home/harun/github/iso-work/release-files/pisilinux/media-content</ReleaseFiles>
