@@ -1,9 +1,15 @@
-Pardusman - Pardus ISO Creator
+Pisiman - Pisilinux ISO Creator
 ==============================
 
 Requirements
 ------------
- - cdrtools
+ - cdrkit
  - syslinux
  - squashfs-tools
- - pyqtermwidget (Required for GUI)
+ - pyqtermwidget5 (Required for GUI)
+ - python-sip
+ - python-qt5
+ - python-qt5-devel
+ - make
+ 
+
