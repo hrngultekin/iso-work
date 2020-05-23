@@ -18,13 +18,19 @@ import tempfile
 # Qt
 import QTermWidget
 
-from PyQt5.QtWidgets import QMessageBox, QMainWindow, QFileDialog, QListWidgetItem
+from PyQt5.QtWidgets import QMessageBox, QMainWindow, QFileDialog, QListWidgetItem, QAction
 from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtCore import pyqtSignal, QFile, Qt
 
 
 # UI
-from gui.ui.main import Ui_MainWindow
+
+# eski kullanıcı arayüzü
+#from gui.ui.main import Ui_MainWindow
+
+# yeni kullanıcı arayüzü
+from gui.ui.mainv2 import Ui_MainWindow
+
 
 # Dialogs
 from gui.languages import LanguagesDialog
@@ -40,6 +46,20 @@ from repotools.project import Project, ExProjectMissing, ExProjectBogus
 
 import gettext
 _ = lambda x:gettext.ldgettext("pardusman", x)
+
+
+
+
+def get_finished_status(project):
+    status = ("make-repo", "check-repo", "make-live", "pack-live", "make-iso")
+    if not os.path.exists(os.path.join(project.work_dir, "finished.txt")):
+        return -1
+
+    with open(os.path.join(project.work_dir, "finished.txt"), 'r') as _file:
+        state = _file.read()
+    state = status.index(state)
+    return state
+
 
 class PackageCollectionListItem(QListWidgetItem):
     def __init__(self, parent, collection, language):
@@ -57,12 +77,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.terminal = QTermWidget.QTermWidget()
         self.terminal.setHistorySize(-1)
         self.terminal.setScrollBarPosition(2)
-        self.terminal.setColorScheme(0)
+        #self.terminal.setColorScheme(0)
         #self.terminal.setTerminalFont(QFont('Terminus'))
         self.terminalLayout.addWidget(self.terminal)
         self.terminal.show()
 
-        self.collectionFrame.hide()
+        #self.collectionFrame.hide()
 
         # Arguments
         self.args = args
@@ -90,6 +110,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionInstallationImagePackages.triggered.connect(self.slotSelectInstallImagePackages)
         self.actionMakeImage.triggered.connect(self.slotMakeImage)
 
+        self.actionMake_Repo.triggered.connect(self.slotMakeRepo)
+        self.actionCheck_Repo.triggered.connect(self.slotCheckRepo)
+        self.actionMake_Live.triggered.connect(self.slotMakeLive)
+        self.actionPack_Live.triggered.connect(self.slotPackLive)
+        self.actionMake_Iso.triggered.connect(self.slotMakeIso)
+
+        self.actionDownloadMissingPackages.triggered.connect(self.slotDownloadMissingPackages)
+
         # Browse buttons
         self.pushBrowseRepository.clicked.connect(self.slotBrowseRepository)
         self.pushBrowseWorkFolder.clicked.connect(self.slotBrowseWorkFolder)
@@ -104,8 +132,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.checkCollection.stateChanged[int].connect(self.slotShowPackageCollection)
         self.listPackageCollection.itemClicked[QListWidgetItem].connect(self.slotClickedCollection)
 
+        self.menuCommands.hovered[QAction].connect(self.updateCommands)
         # Initialize
         self.initialize()
+
+
+
+        self.updateCommands()
 
     def initialize(self):
         if len(self.args) == 2:
@@ -130,11 +163,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             "Open..." menu item fires this function.
         """
         if not filename:
-            filename = QFileDialog.getOpenFileName(self, _("Select project file"), ".", "*.xml")
+            filename = QFileDialog.getOpenFileName(self, _("Select project file"), "../project-files", "Xml Files (*.xml)")
             filename=filename[0]
         if filename:
             self.project = Project()
-            
+
             try:
                 self.project.open(filename)
             except ExProjectMissing:
@@ -144,6 +177,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 QMessageBox.warning(self, self.title, _("Project file is corrupt."))
                 return
             self.loadProject()
+            self.updateCommands()
 
     def slotSave(self):
         """
@@ -159,18 +193,43 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
             "Save As..." menu item fires this function.
         """
-        filename = QFileDialog.getSaveFileName(self, _("Save project"), os.getcwd(), "*.xml")
+        filename = QFileDialog.getSaveFileName(self, _("Save project"), os.getcwd(), "Xml Files (*.xml)")
         filename=filename[0]
         if filename:
             self.project.filename = unicode(filename)
             self.slotSave()
 
+    def get_path(self, text):
+        print(text)
+        if text != "":
+
+            if(os.path.splitext(text)[1] != ""):
+                _dir = os.path.dirname(text)
+            else:
+                _dir = text
+
+            if(_dir.startswith("file:///")):
+                _dir = _dir[7:]
+            elif(_dir.startswith("file:/")):
+                _dir = _dir[5:]
+
+            if not os.path.exists(_dir) or _dir == "":
+                _dir = "."
+        else:
+            _dir = "."
+
+        print(_dir)
+        return _dir
+
     def slotBrowseRepository(self):
         """
             Browse repository button fires this function.
         """
-        filename = QFileDialog.getOpenFileName(self, _("Select repository index"), ".", "pisi-index.xml*")
-        filename=filename[0]
+
+        _dir = self.get_path(self.lineRepository.text())
+
+        filename = QFileDialog.getOpenFileName(self, _("Select repository index"), _dir, "Pisi Index Files(*-index.xml *-index.xml.xz)")
+        filename = filename[0]
         if filename:
             filename = unicode(filename)
             if filename.startswith("/"):
@@ -181,7 +240,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
             Browse plugin package button fires this function.
         """
-        filename = QFileDialog.getOpenFileName(self, _("Select plugin package"), ".", "*.pisi")
+        _dir = self.get_path(self.linePluginPackage.text())
+
+
+        filename = QFileDialog.getOpenFileName(self, _("Select plugin package"), _dir, "Pisi Files(*.pisi)")
         filename=filename[0]
         if filename:
             self.linePluginPackage.setText(filename)
@@ -190,7 +252,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
             Browse release files button fires this function.
         """
-        directory = QFileDialog.getExistingDirectory(self, "")
+        _dir = self.get_path(self.lineReleaseFiles.text())
+
+        directory = QFileDialog.getExistingDirectory(self, "", _dir)
         if directory:
             self.lineReleaseFiles.setText(directory)
 
@@ -198,7 +262,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
             Browse work folder button fires this function.
         """
-        directory = QFileDialog.getExistingDirectory(self, "")
+        _dir = self.get_path(self.lineWorkFolder.text())
+
+        directory = QFileDialog.getExistingDirectory(self, "", _dir)
         if directory:
             self.lineWorkFolder.setText(directory)
 
@@ -264,10 +330,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def slotShowPackageCollection(self, state):
         if state == Qt.Checked:
-            self.collectionFrame.show()
+            #self.collectionFrame.show()
             self.actionPackages.setVisible(False)
         else:
-            self.collectionFrame.hide()
+            #self.collectionFrame.hide()
             self.actionPackages.setVisible(True)
 
     def slotSelectLanguages(self):
@@ -325,10 +391,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.updateProject()
         self.updateRepo()
 
+    def updateCommands(self):
+        state = get_finished_status(self.project)
+        #print(state)
+
+        self.actionCheck_Repo.setEnabled(state >= 0)
+        self.actionMake_Live.setEnabled(state >= 1)
+        self.actionPack_Live.setEnabled(state >= 2)
+        self.actionMake_Iso.setEnabled(state >= 3)
+
+
+
     def slotMakeImage(self):
         """
             Make image button fires this function.
         """
+        self.tabWidget.setCurrentIndex(2)
+        if os.path.exists(os.path.join(self.project.work_dir, "finished.txt")):
+            os.remove(os.path.join(self.project.work_dir, "finished.txt"))
+
         if not self.repo:
             if not self.checkProject():
                 return
@@ -347,6 +428,134 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         cmd = '%s make %s' % (app_path, temp_project.name)
         self.terminal.sendText("sudo %s\n" % cmd)
         self.terminal.setFocus()
+        self.updateCommands()
+
+    def slotMakeRepo(self):
+        """
+            Make image button fires this function.
+        """
+        self.tabWidget.setCurrentIndex(2)
+        if not self.repo:
+            if not self.checkProject():
+                return
+            if not self.updateRepo():
+                return
+        temp_project = tempfile.NamedTemporaryFile(delete=False)
+        self.project.save(temp_project.name)
+        app_path = self.args[0]
+        if app_path[0] != "/":
+            app_path = os.path.join(os.getcwd(), app_path)
+
+        # Konsole Mode
+        # cmd = 'konsole --noclose --workdir "%s" -e "%s" make "%s"' % (os.getcwd(), app_path, temp_project.name)
+        # subprocess.Popen(["xdg-su", "-u", "root", "-c", cmd])
+
+        cmd = '%s make-repo %s' % (app_path, temp_project.name)
+        self.terminal.sendText("sudo %s\n" % cmd)
+        self.terminal.setFocus()
+        self.updateCommands()
+
+    def slotCheckRepo(self):
+        """
+            Make image button fires this function.
+        """
+        self.tabWidget.setCurrentIndex(2)
+        if not self.repo:
+            if not self.checkProject():
+                return
+            if not self.updateRepo():
+                return
+        temp_project = tempfile.NamedTemporaryFile(delete=False)
+        self.project.save(temp_project.name)
+        app_path = self.args[0]
+        if app_path[0] != "/":
+            app_path = os.path.join(os.getcwd(), app_path)
+
+        # Konsole Mode
+        # cmd = 'konsole --noclose --workdir "%s" -e "%s" make "%s"' % (os.getcwd(), app_path, temp_project.name)
+        # subprocess.Popen(["xdg-su", "-u", "root", "-c", cmd])
+
+        cmd = '%s check-repo %s' % (app_path, temp_project.name)
+        self.terminal.sendText("sudo %s\n" % cmd)
+        self.terminal.setFocus()
+        self.updateCommands()
+
+    def slotMakeLive(self):
+        self.tabWidget.setCurrentIndex(2)
+        """
+            Make image button fires this function.
+        """
+        if not self.repo:
+            if not self.checkProject():
+                return
+            if not self.updateRepo():
+                return
+        temp_project = tempfile.NamedTemporaryFile(delete=False)
+        self.project.save(temp_project.name)
+        app_path = self.args[0]
+        if app_path[0] != "/":
+            app_path = os.path.join(os.getcwd(), app_path)
+
+        # Konsole Mode
+        # cmd = 'konsole --noclose --workdir "%s" -e "%s" make "%s"' % (os.getcwd(), app_path, temp_project.name)
+        # subprocess.Popen(["xdg-su", "-u", "root", "-c", cmd])
+
+        cmd = '%s make-live %s' % (app_path, temp_project.name)
+        self.terminal.sendText("sudo %s\n" % cmd)
+        self.terminal.setFocus()
+        self.updateCommands()
+
+
+    def slotPackLive(self):
+        """
+            Make image button fires this function.
+        """
+        self.tabWidget.setCurrentIndex(2)
+        if not self.repo:
+            if not self.checkProject():
+                return
+            if not self.updateRepo():
+                return
+        temp_project = tempfile.NamedTemporaryFile(delete=False)
+        self.project.save(temp_project.name)
+        app_path = self.args[0]
+        if app_path[0] != "/":
+            app_path = os.path.join(os.getcwd(), app_path)
+
+        # Konsole Mode
+        # cmd = 'konsole --noclose --workdir "%s" -e "%s" make "%s"' % (os.getcwd(), app_path, temp_project.name)
+        # subprocess.Popen(["xdg-su", "-u", "root", "-c", cmd])
+
+        cmd = '%s pack-live %s' % (app_path, temp_project.name)
+        self.terminal.sendText("sudo %s\n" % cmd)
+        self.terminal.setFocus()
+        self.updateCommands()
+
+
+    def slotMakeIso(self):
+        """
+            Make image button fires this function.
+        """
+        self.tabWidget.setCurrentIndex(2)
+        if not self.repo:
+            if not self.checkProject():
+                return
+            if not self.updateRepo():
+                return
+        temp_project = tempfile.NamedTemporaryFile(delete=False)
+        self.project.save(temp_project.name)
+        app_path = self.args[0]
+        if app_path[0] != "/":
+            app_path = os.path.join(os.getcwd(), app_path)
+
+        # Konsole Mode
+        # cmd = 'konsole --noclose --workdir "%s" -e "%s" make "%s"' % (os.getcwd(), app_path, temp_project.name)
+        # subprocess.Popen(["xdg-su", "-u", "root", "-c", cmd])
+
+        cmd = '%s make-iso %s' % (app_path, temp_project.name)
+        self.terminal.sendText("sudo %s\n" % cmd)
+        self.terminal.setFocus()
+        self.updateCommands()
 
     def updateCollection(self):
         self.project.package_collections = []
@@ -408,6 +617,34 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             self.checkCollection.setChecked(False)
 
+
+    def slotDownloadMissingPackages(self):
+        # FIXME: her paket tek tek kontrol ediliyor daha iyi bir fonksiyon yazılmalı
+        while True:
+            # Progress dialog
+            self.progress = Progress(self)
+            # Update project
+            self.updateProject()
+            # Get repository
+            try:
+                self.repo = self.project.get_repo(self.progress, update_repo=True)
+            except ExPackageMissing, e:
+                self.progress.finished()
+
+                curdir = os.getcwd()
+
+                repo_path = os.path.dirname(self.project.repo_uri)
+                if repo_path.startswith("file:///"): repo_path = repo_path[7:]
+                print(_("Package index has errors. '%s' depends on non-existing '%s'.") % e.args)
+                os.chdir(repo_path)
+                os.system("pisi fc {}".format(" ".join(e.args[1:])))
+                os.system("pisi ix --skip-signing")
+
+                os.chdir(curdir)
+            else:
+                self.progress.finished()
+                break
+
     def updateRepo(self, update_repo=True):
         """
             Fetches package index and retrieves list of package and components.
@@ -430,15 +667,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return False
         except ExPackageMissing, e:
             self.progress.finished()
+            print("============================================================")
             QMessageBox.warning(self, self.title, _("Package index has errors. '%s' depends on non-existing '%s'.") % e.args)
             return False
         else:
             self.progress.finished()
-       
 
         missing_components, missing_packages = self.project.get_missing()
         if len(missing_components):
-            print("missing components : {}".format(missing_components))
             QMessageBox.warning(self, self.title, _("There are missing components: {}. Removing.".format(", ".join(missing_components))))
             for component in missing_components:
                 if component in self.project.selected_components:
@@ -448,7 +684,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             #self.updateRepo(update_repo=False)
 
         if len(missing_packages):
-            print("missing packages : {}".format(missing_packages))
             QMessageBox.warning(self, self.title, _("There are missing packages: {}. Removing.".format(", ".join(missing_packages))))
             for package in missing_packages:
                 if package in self.project.selected_packages:

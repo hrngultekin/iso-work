@@ -282,7 +282,7 @@
      <x>0</x>
      <y>0</y>
      <width>619</width>
-     <height>20</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -301,6 +301,18 @@
     <property name="title">
      <string>Project</string>
     </property>
+    <widget class="QMenu" name="menuCommands">
+     <property name="title">
+      <string>Commands</string>
+     </property>
+     <addaction name="actionMake_Repo"/>
+     <addaction name="actionCheck_Repo"/>
+     <addaction name="separator"/>
+     <addaction name="actionMake_Live"/>
+     <addaction name="actionPack_Live"/>
+     <addaction name="separator"/>
+     <addaction name="actionMake_Iso"/>
+    </widget>
     <addaction name="actionUpdateRepo"/>
     <addaction name="separator"/>
     <addaction name="actionPackages"/>
@@ -308,6 +320,7 @@
     <addaction name="actionLanguages"/>
     <addaction name="separator"/>
     <addaction name="actionMakeImage"/>
+    <addaction name="menuCommands"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuProject"/>
@@ -365,6 +378,9 @@
    <property name="text">
     <string>Update Repo</string>
    </property>
+   <property name="shortcut">
+    <string>F5</string>
+   </property>
   </action>
   <action name="actionPackages">
    <property name="icon">
@@ -400,6 +416,31 @@
    </property>
    <property name="text">
     <string>Make Image</string>
+   </property>
+  </action>
+  <action name="actionMake_Repo">
+   <property name="text">
+    <string>Make Repo</string>
+   </property>
+  </action>
+  <action name="actionCheck_Repo">
+   <property name="text">
+    <string>Check Repo</string>
+   </property>
+  </action>
+  <action name="actionMake_Live">
+   <property name="text">
+    <string>Make Live</string>
+   </property>
+  </action>
+  <action name="actionPack_Live">
+   <property name="text">
+    <string>Pack Live</string>
+   </property>
+  </action>
+  <action name="actionMake_Iso">
+   <property name="text">
+    <string>Make Iso</string>
    </property>
   </action>
  </widget>

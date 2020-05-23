@@ -21,18 +21,22 @@ import shutil
 import hashlib
 import tempfile
 
+import pathlib2
+
 from repotools.utility import xterm_title, wait_bus
 
 #
 # Utilities
 #
 
+
 def run(cmd, ignore_error=False):
-    print cmd
+    print(cmd)
     ret = os.system(cmd)
     if ret and not ignore_error:
-        print "%s returned %s" % (cmd, ret)
+        print("%s returned %s" % (cmd, ret))
         sys.exit(1)
+
 
 def connectToDBus(path):
     global bus
@@ -49,12 +53,13 @@ def connectToDBus(path):
         return True
     return False
 
+
 def chroot_comar(image_dir):
     if os.fork() == 0:
         # Workaround for creating ISO's on 2007 with PiSi 2.*
         # Create non-existing /var/db directory before running COMAR
         try:
-            os.makedirs(os.path.join(image_dir, "var/db"), 0700)
+            os.makedirs(os.path.join(image_dir, "var/db"), 0o700)
         except OSError:
             pass
         os.chroot(image_dir)
@@ -65,6 +70,7 @@ def chroot_comar(image_dir):
         sys.exit(0)
     wait_bus("%s/run/dbus/system_bus_socket" % image_dir)
 
+
 def get_exclude_list(project):
     exc = project.exclude_list()[:]
     image_dir = project.image_dir()
@@ -74,12 +80,79 @@ def get_exclude_list(project):
             exc.append("boot/" + name)
     return exc
 
+
+# efi için dosyaların eklenmesi
+def setup_efi(project):
+    image_dir = project.image_dir()
+    iso_dir = project.iso_dir()
+
+    def copy(src, dest):
+        run('cp -PR "%s" "%s"' % (src, os.path.join(iso_dir, dest)))
+
+
+    path = "./data/efi"
+    for name in os.listdir(path):
+        copy(os.path.join(path, name), name)
+
+    copy("./data/isomounts", "pisi")
+
+    path = os.path.join(image_dir, "boot")
+    for name in os.listdir(path):
+        if name.startswith("kernel") or name.startswith("initr") or name.endswith(".bin"):
+            if name.startswith("kernel"):
+                copy(os.path.join(path, name), "EFI/pisi/kernel.efi")
+            elif name.startswith("initrd"):
+                copy(os.path.join(path, name), "EFI/pisi/initrd.img")
+
+
+
+def mkinitcpio(project, prog="mkinitcpio"):
+    try:
+        image_dir = project.image_dir()
+        iso_dir = project.iso_dir()
+
+        run('umount %s/dev' % image_dir, ignore_error=True)
+        run('umount %s/proc' % image_dir, ignore_error=True)
+        run('umount %s/sys' % image_dir, ignore_error=True)
+
+        def chrun(cmd):
+            run('chroot "%s" %s' % (image_dir, cmd))
+
+        def copy2(src, dest):
+            run('cp -PR "%s" "%s"' % (src, os.path.join(image_dir, dest)))
+
+        path = "./data/initcpio"
+        copy2(path, "usr/lib")
+        copy2("./data/mkinitcpio-live.conf", "etc")
+
+        # path = os.path.join(image_dir, "boot/pisi")
+        # if not os.path.exists(path):
+        #    os.makedirs(path)
+
+        run('/bin/mount --bind /dev %s/dev' % image_dir)
+        run('/bin/mount --bind /proc %s/proc' % image_dir)
+        run('/bin/mount --bind /sys %s/sys' % image_dir)
+
+        rep = project.get_repo()
+        kernel_version = rep.packages['kernel'].version
+
+
+        chrun("/usr/bin/" + prog + " -k "+ kernel_version + " -c /etc/mkinitcpio-live.conf -g /boot/initrd")
+
+        run('umount %s/dev' % image_dir)
+        run('umount %s/proc' % image_dir)
+        run('umount %s/sys' % image_dir)
+    except KeyboardInterrupt:
+        print("Keyboard Interrupt: make_image() cancelled.")
+        sys.exit(1)
+
 #
 # Grub related stuff
 #
 
+
 def generate_grub_conf(project, kernel, initramfs):
-    print "Generating grub.conf files..."
+    print("Generating grub.conf files...")
     xterm_title("Generating grub.conf files")
 
     image_dir = project.image_dir()
@@ -92,13 +165,14 @@ def generate_grub_conf(project, kernel, initramfs):
     grub_dict["exparams"] = project.extra_params or ''
 
     path = os.path.join(image_dir, "usr/share/grub/templates")
-    dest = os.path.join(iso_dir, "boot/grub")
+    dest = os.path.join(iso_dir, "pisi/boot/grub")
     for name in os.listdir(path):
         if name.startswith("menu"):
             data = file(os.path.join(path, name)).read()
             f = file(os.path.join(dest, name), "w")
             f.write(data % grub_dict)
             f.close()
+
 
 def setup_grub(project):
     image_dir = project.image_dir()
@@ -107,7 +181,7 @@ def setup_grub(project):
     initramfs = ""
 
     # Setup dir
-    path = os.path.join(iso_dir, "boot/grub")
+    path = os.path.join(iso_dir, "pisi/boot/grub")
     if not os.path.exists(path):
         os.makedirs(path)
 
@@ -117,23 +191,25 @@ def setup_grub(project):
     # Copy the kernel and initramfs
     path = os.path.join(image_dir, "boot")
     for name in os.listdir(path):
-        if name.startswith("kernel") or name.startswith("initramfs") or name.endswith(".bin"):
+        if name.startswith("kernel") or name.startswith("initramfs") or name.startswith("initrd") or name.endswith(".bin"):
             if name.startswith("kernel"):
                 kernel = name
             elif name.startswith("initramfs"):
                 initramfs = name
-            copy(os.path.join(path, name), "boot/" + name)
-
-    # and the other files
-    path = os.path.join(image_dir, "boot/grub")
+            elif name.startswith("initrd"):
+                initramfs = name
+            copy(os.path.join(path, name), "pisi/boot/" + name)
+    # and the other files
+    path = os.path.join(image_dir, "pisi/boot/grub")
     for name in os.listdir(path):
         copy(os.path.join(path, name), "boot/grub/" + name)
 
     # Generate the config file
     generate_grub_conf(project, kernel, initramfs)
 
+
 def generate_isolinux_conf(project):
-    print "Generating isolinux config files..."
+    print("Generating isolinux config files...")
     xterm_title("Generating isolinux config files")
 
     dict = {}
@@ -150,19 +226,20 @@ def generate_isolinux_conf(project):
     if project.type != "live":
         dict["rescue_template"] = """
 label rescue
-    kernel /boot/kernel
-    append initrd=/boot/initrd yali=rescue %(exparams)s
+    kernel /pisi/boot/kernel
+    append initrd=/pisi/boot/initrd yali=rescue %(exparams)s
 """ % dict
 
     isolinux_tmpl = """
-prompt 1
-timeout 200
+default start
+implicit 1
+ui gfxboot bootlogo
+prompt   1
+timeout  200
 
-ui gfxboot.c32 /boot/isolinux/init
-
-label pisilinux
-    kernel /boot/kernel
-    append initrd=/boot/initrd %(exparams)s
+label %(title)s
+    kernel /pisi/boot/kernel
+    append initrd=/pisi/boot/initrd misobasedir=pisi misolabel=pisilive overlay=free quiet %(exparams)s
 
 %(rescue_template)s
 
@@ -170,14 +247,14 @@ label harddisk
     localboot 0x80
 
 label memtest
-    kernel /boot/memtest
+    kernel /pisi/boot/memtest
 
 label hardware
     kernel hdt.c32
 """
 
     # write isolinux.cfg
-    dest = os.path.join(iso_dir, "boot/isolinux/isolinux.cfg")
+    dest = os.path.join(iso_dir, "isolinux/isolinux.cfg")
     data = isolinux_tmpl % dict
 
     f = file(dest, "w")
@@ -186,14 +263,14 @@ label hardware
 
     # write gfxboot config for title
     data = file(os.path.join(image_dir, "usr/share/gfxtheme/pisilinux/install/gfxboot.cfg")).read()
-    f = file(os.path.join(iso_dir, "boot/isolinux/gfxboot.cfg"), "w")
+    f = file(os.path.join(iso_dir, "isolinux/gfxboot.cfg"), "w")
     f.write(data % dict)
     f.close()
 
     if len(lang_all) and lang_default != "":
         langdata = ""
 
-        if not lang_default in lang_all:
+        if lang_default not in lang_all:
             lang_all.append(lang_default)
 
         lang_all.sort()
@@ -201,25 +278,24 @@ label hardware
         for i in lang_all:
             langdata += "%s\n" % i
 
-
         # write default language
-        f = file(os.path.join(iso_dir, "boot/isolinux/lang"), "w")
+        f = file(os.path.join(iso_dir, "isolinux/lang"), "w")
         f.write("%s\n" % lang_default)
         f.close()
 
         # FIXME: this is the default language selection, make it selectable
         # when this file does not exist, isolinux pops up language menu
-        if os.path.exists(os.path.join(iso_dir, "boot/isolinux/lang")):
-            os.unlink(os.path.join(iso_dir, "boot/isolinux/lang"))
+        if os.path.exists(os.path.join(iso_dir, "isolinux/lang")):
+            os.unlink(os.path.join(iso_dir, "isolinux/lang"))
 
         # write available languages
-        f = file(os.path.join(iso_dir, "boot/isolinux/languages"), "w")
+        f = file(os.path.join(iso_dir, "isolinux/languages"), "w")
         f.write(langdata)
         f.close()
 
 
 def setup_isolinux(project):
-    print "Generating isolinux files..."
+    print("Generating isolinux files...")
     xterm_title("Generating isolinux files")
 
     image_dir = project.image_dir()
@@ -227,7 +303,11 @@ def setup_isolinux(project):
     repo = project.get_repo()
 
     # Setup dir
-    path = os.path.join(iso_dir, "boot/isolinux")
+    path = os.path.join(iso_dir, "isolinux")
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+    path = os.path.join(iso_dir, "pisi/boot")
     if not os.path.exists(path):
         os.makedirs(path)
 
@@ -237,14 +317,15 @@ def setup_isolinux(project):
     # Copy the kernel and initramfs
     path = os.path.join(image_dir, "boot")
     for name in os.listdir(path):
-        if name.startswith("kernel") or name.startswith("initramfs") or name.endswith(".bin"):
+        print(name)
+        if name.startswith("kernel") or name.startswith("initr") or name.endswith(".bin"):
             if name.startswith("kernel"):
-                copy(os.path.join(path, name), "boot/kernel")
-            elif name.startswith("initramfs"):
-                copy(os.path.join(path, name), "boot/initrd")
+                copy(os.path.join(path, name), "pisi/boot/kernel")
+            elif name == "initrd" or name.startswith("initramfs"):
+                copy(os.path.join(path, name), "pisi/boot/initrd")
 
     tmplpath = os.path.join(image_dir, "usr/share/gfxtheme/pisilinux/install")
-    dest = os.path.join(iso_dir, "boot/isolinux")
+    dest = os.path.join(iso_dir, "isolinux")
     for name in os.listdir(tmplpath):
         if name != "gfxboot.cfg":
             copy(os.path.join(tmplpath, name), dest)
@@ -253,19 +334,29 @@ def setup_isolinux(project):
     generate_isolinux_conf(project)
 
     # we don't use debug anymore for the sake of hybrid
-    copy(os.path.join(image_dir, "usr/lib/syslinux/isolinux.bin"), "%s/isolinux.bin" % dest)
-    copy(os.path.join(image_dir, "usr/lib/syslinux/hdt.c32"), dest)
-    copy(os.path.join(image_dir, "usr/lib/syslinux/gfxboot.c32"), dest)
+    copy(os.path.join(image_dir, "usr/lib/syslinux/bios/isolinux.bin"), "%s/isolinux.bin" % dest)
+    copy(os.path.join(image_dir, "usr/lib/syslinux/bios/isohdpfx.bin"), "%s/isohdpfx.bin" % dest)
+    copy(os.path.join(image_dir, "usr/lib/syslinux/bios/hdt.c32"), dest)
+
+    # for boot new syslinux
+    copy(os.path.join(image_dir, "usr/lib/syslinux/bios/ldlinux.c32"), dest)
+    copy(os.path.join(image_dir, "usr/lib/syslinux/bios/libcom32.c32"), dest)
+    copy(os.path.join(image_dir, "usr/lib/syslinux/bios/libutil.c32"), dest)
+    copy(os.path.join(image_dir, "usr/lib/syslinux/bios/vesamenu.c32"), dest)
+    copy(os.path.join(image_dir, "usr/lib/syslinux/bios/libmenu.c32"), dest)
+    copy(os.path.join(image_dir, "usr/lib/syslinux/bios/libgpl.c32"), dest)
+
+    copy(os.path.join(image_dir, "usr/lib/syslinux/bios/gfxboot.c32"), dest)
     copy(os.path.join(image_dir, "usr/share/misc/pci.ids"), dest)
 
     kernel_version = open(os.path.join(image_dir, "etc/kernel/kernel")).read()
-    #copy(os.path.join(image_dir, "lib/modules/%s/modules.pcimap" % kernel_version), dest)
-    copy(os.path.join(image_dir, "boot/memtest"), os.path.join(iso_dir, "boot"))
+    # copy(os.path.join(image_dir, "lib/modules/%s/modules.pcimap" % kernel_version), dest)
+    copy(os.path.join(image_dir, "boot/memtest"), os.path.join(iso_dir, "pisi/boot"))
+
 
 #
 # Image related stuff
 #
-
 def setup_live_kdm(project):
     image_dir = project.image_dir()
     kdmrc_path = os.path.join(image_dir, "etc/X11/kdm/kdmrc")
@@ -282,7 +373,8 @@ def setup_live_kdm(project):
                 lines.append(line)
         open(kdmrc_path, "w").write("".join(lines))
     else:
-        print "*** %s doesn't exist, setup_live_kdm() returned" % kdmrc_path
+        print("*** %s doesn't exist, setup_live_kdm() returned" % kdmrc_path)
+
 
 def setup_live_sddm(project):
     image_dir = project.image_dir()
@@ -290,19 +382,19 @@ def setup_live_sddm(project):
     if os.path.exists(sddmconf_path):
         lines = []
         for line in open(sddmconf_path, "r").readlines():
-            if line.startswith("Relogin"):
-                lines.append("Relogin=true")
-            elif line.startswith("User"):
+            if line.startswith("User"):
                 lines.append("User=pisi\n")
             elif line.startswith("Session"):
-                lines.append("Session=/usr/share/xsessions/plasma-mediacenter\n") #this code may be have an error
-            #elif line.startswith("#ServerTimeout="):
+                # lines.append("Session=/usr/share/xsessions/plasma-mediacenter\n") #this code may be have an error
+                lines.append("Session=/usr/share/xsessions/plasma\n")
+            # elif line.startswith("#ServerTimeout="):
             #    lines.append("ServerTimeout=60\n")
             else:
                 lines.append(line)
         open(sddmconf_path, "w").write("".join(lines))
     else:
-        print "*** %s doesn't exist, setup_live_sddm() returned" % sddmconf_path
+        print("*** {} doesn't exist, setup_live_sddm() returned".format(
+            sddmconf_path))
 
 
 def setup_live_policykit_conf(project):
@@ -317,12 +409,13 @@ ResultActive=yes
     # Write PolicyKit.conf
     image_dir = project.image_dir()
     # make sure etc/polkit-1/localauthority/90-mandatory.d directory exists
-    os.makedirs(os.path.join(image_dir, "etc/polkit-1/localauthority/90-mandatory.d"), 0644)
+    os.makedirs(os.path.join(image_dir, "etc/polkit-1/localauthority/90-mandatory.d"), 0o644)
     dest = os.path.join(image_dir, "etc/polkit-1/localauthority/90-mandatory.d/livecd.pkla")
 
     f = file(dest, "w")
     f.write(policykit_conf_tmpl)
     f.close()
+
 
 def copyPisiIndex(project):
     image_dir = project.image_dir()
@@ -338,15 +431,15 @@ def copyPisiIndex(project):
             source = os.path.join(project.install_repo_dir(), "%s-index.xml.bz2" % collection._id)
             run('cp -PR "%s" "%s"' % (source, collectionDir))
             run('sha1sum "%s" > "%s"' % (source, "%s.sha1sum" % os.path.join(collectionDir, os.path.basename(source))))
-            #run('cp -PR "%s" "%s"' % (os.path.join(os.getcwd(), "icons", collection.icon), collectionDir))
-            #print('cp -PR "%s" "%s"' % (source, collectionDir))
-            #print('sha1sum "%s" > "%s"' % (source, "%s.sha1sum" % os.path.join(collectionDir,os.path.basename(source))))
-            #print('cp -PR "%s" "%s"' % (collection.icon, collectionDir))
+            # run('cp -PR "%s" "%s"' % (os.path.join(os.getcwd(), "icons", collection.icon), collectionDir))
+            # print('cp -PR "%s" "%s"' % (source, collectionDir))
+            # print('sha1sum "%s" > "%s"' % (source, "%s.sha1sum" % os.path.join(collectionDir,os.path.basename(source))))
+            # print('cp -PR "%s" "%s"' % (collection.icon, collectionDir))
 
     # Copy All Collection Packages index as pisi index dvd and default cd installation
     yali_data_dir = os.path.join(image_dir, "usr/share/yali/data")
     if not os.path.exists(yali_data_dir):
-        print "Creating data directory for YALI..."
+        print("Creating data directory for YALI...")
         run('mkdir -p %s' % yali_data_dir)
     path = os.path.join(image_dir, "usr/share/yali/data/%s" % os.path.basename(project.repo_uri))
     repo = os.path.join(project.work_dir, "repo_cache/%s" % os.path.basename(project.repo_uri))
@@ -356,43 +449,93 @@ def copyPisiIndex(project):
     print('cp -PR "%s" "%s"' % (repo, path))
     print('sha1sum "%s" > "%s"' % (repo, "%s.sha1sum" % path))
 
+
 def install_packages(project):
     image_dir = project.image_dir()
     path = os.path.join(image_dir, "var/lib/pisi/package")
-    print "len(project.all_packages:%s" % len(project.all_packages)
-    run('pisi --yes-all --ignore-comar --ignore-dependency --ignore-file-conflicts -D"%s" it %s ' % (image_dir, " ".join(project.all_packages)))
+    # print("len(project.all_packages:%s" % len(project.all_install_image_packages))
+    if 'Calamares' in project.all_packages:
+        packages = project.all_packages
+    else:
+        packages = project.all_install_image_packages  # or repo.full_deps("yali")
+    run('pisi --yes-all --ignore-comar --ignore-dependency --ignore-file-conflicts -D"%s" it %s ' % (image_dir, " ".join(packages)))
     # --ignore-dep added to avoid dependencies re not in system.base like exceptions
-    #for name in project.all_packages:
-        #flag = True
-        #if os.path.exists(path):
-            #for avail in os.listdir(path):
-                #if avail.startswith(name) and avail[len(name)] == "-":
-                    #flag = False
-        #if flag:
-            #run('pisi --yes-all --ignore-comar --ignore-file-conflicts -D"%s" it %s ' % (image_dir, name))
-     ##commented from "for line" above
+    # for name in project.all_packages:
+    #     flag = True
+    #     if os.path.exists(path):
+    #         for avail in os.listdir(path):
+    #             if avail.startswith(name) and avail[len(name)] == "-":
+    #                 flag = False
+    #     if flag:
+    #         run('pisi --yes-all --ignore-comar --ignore-file-conflicts -D"%s" it %s ' % (image_dir, name))
+    # commented from "for line" above
+
+
 def squash_image(project):
+    # mkinitcpio(project)
+
     image_dir = project.image_dir()
     image_file = project.image_file()
 
-    print "squashfs image dir%s" % image_dir
+    def cp2skel(source, dest):
+        if not os.path.exists("{}/etc/skel/{}".format(image_dir, dest)):
+            #os.mkdir("{}/etc/skel/{}".format(image_dir, dest))
+            pathlib2.Path("{}/etc/skel/{}".format(image_dir, dest)).mkdir(parents=True)
+            #pass
+
+        shutil.copy(source, "{}/etc/skel/{}".format(image_dir, dest))
+
+    if project.type == "live":
+        cp2skel("./data/yali/yali.desktop", ".config/autostart")
+        shutil.copy("./data/yali/yali.desktop", "{}/usr/share/applications/".format(image_dir))
+        shutil.copy("./data/yali/yali.desktop", "{}/home/pisi/.config/autostart/".format(image_dir))
+        shutil.copy("./data/yali/org.pisilinux.yali.policy", "{}/usr/share/polkit-1/actions/".format(image_dir))
+        shutil.copy("./data/yali/yali-rescue.desktop", "{}/usr/share/applications/".format(image_dir))
+
+    # DİKKAT: paket düzeltildikten sonra kaldırılacak!!!
+    # sudo paketi için eklendi #################################################
+    run("chroot '{0}' ln -s /usr/lib/libcrypto.so.1.1 /usr/lib/libcrypto.so.1.0.0".format(image_dir), ignore_error=True)
+    run("chroot '{0}' ln -s /usr/lib/libssl.so.1.1 /usr/lib/libssl.so.1.0.0".format(image_dir), ignore_error=True)
+    # sudo paketi için eklendi #################################################
+
+    # DİKKAT: paket düzeltildikten sonra kaldırılacak!!!
+    # plymouth test için eklendi ####################################################
+    run("cp -f {0}/usr/share/plymouth/plymouthd.defaults {0}/etc/plymouth/plymouthd.conf".format(image_dir))
+
+    if project.type == "install":
+        if os.path.exists("%s/run/livemedia" % image_dir):
+            run("rm %s/run/livemedia" % image_dir)
+        
+        if os.path.exists("%s/home/pisi/.livemedia" % image_dir):
+            run("rm %s/home/pisi/.livemedia" % image_dir)
+    else:
+        run("touch %s/run/livemedia" % image_dir)
+        run("touch %s/home/pisi/.livemedia" % image_dir)
+
+
+    mkinitcpio(project)
+
+    print("squashfs image dir%s" % image_dir)
     if not image_dir.endswith("/"):
         image_dir += "/"
-    print "later squashfs image dir%s" % image_dir
+    print("later squashfs image dir%s" % image_dir)
     temp = tempfile.NamedTemporaryFile()
     f = file(temp.name, "w")
     f.write("\n".join(get_exclude_list(project)))
     f.close()
 
+
+
     mksquashfs_cmd = 'mksquashfs "%s" "%s" -noappend -comp %s -ef "%s"' % (image_dir, image_file, project.squashfs_comp_type, temp.name)
     run(mksquashfs_cmd)
+    with open(os.path.join(project.work_dir, "finished.txt"), 'w') as _file: _file.write("pack-live")
+
 
 #
 # Operations
 #
-
 def make_repos(project):
-    print "Preparing image repo..."
+    print("Preparing image repo...")
     xterm_title("Preparing repo")
 
     try:
@@ -402,45 +545,52 @@ def make_repos(project):
             imagedeps = project.all_install_image_packages or repo.full_deps("yali")
             xterm_title("Preparing image repo for installation")
         else:
-            imagedeps = project.all_packages
+            if 'Calamares' in project.all_packages:
+                imagedeps = project.all_packages
+            else:
+                imagedeps = project.all_install_image_packages  # or repo.full_deps("yali")
             xterm_title("Preparing image repo for live")
 
         repo.make_local_repo(repo_dir, imagedeps)
 
-        if project.type == "install":
-            xterm_title("Preparing installination repo")
-            print "Preparing installation repository..."
+        # if project.type == "install":
+        xterm_title("Preparing installination repo")
+        print("Preparing installation repository...")
 
-            repo_dir = project.install_repo_dir(clean=True)
-            if project.package_collections:
-                all_packages = []
-                for collection in project.package_collections:
-                    all_packages.extend(collection.packages.allPackages)
-                    # Making repos and index files per collection
-                    repo.make_local_repo(repo_dir, collection.packages.allPackages, collection._id)
+        repo_dir = project.install_repo_dir(clean=True)
+        if project.package_collections:
+            all_packages = []
+            for collection in project.package_collections:
+                all_packages.extend(collection.packages.allPackages)
+                # Making repos and index files per collection
+                repo.make_local_repo(repo_dir, collection.packages.allPackages, collection._id)
 
-                repo.make_local_repo(repo_dir, all_packages)
-                repo.make_collection_index(repo_dir, project.package_collections, project.default_language)
-                print "Preparing collections project file"
-            else:
-                repo.make_local_repo(repo_dir, project.all_packages)
-
+            repo.make_local_repo(repo_dir, all_packages)
+            repo.make_collection_index(repo_dir, project.package_collections, project.default_language)
+            print("Preparing collections project file")
+        else:
+            repo.make_local_repo(repo_dir, project.all_packages)
+        with open(os.path.join(project.work_dir, "finished.txt"), 'w') as _file: _file.write("make-repo")
     except KeyboardInterrupt:
-        print "Keyboard Interrupt: make_repo() cancelled."
+        print("Keyboard Interrupt: make_repo() cancelled.")
         sys.exit(1)
+
 
 def check_file(repo_dir, name, _hash):
     path = os.path.join(repo_dir, name)
     if not os.path.exists(path):
-        print "\nPackage missing: %s" % path
+        print("\nPackage missing: %s" % path)
         return
     data = file(path).read()
     cur_hash = hashlib.sha1(data).hexdigest()
     if cur_hash != _hash:
-        print "\nWrong hash: %s" % path
+        print("\nWrong hash: %s" % path)
+
 
 def check_repo_files(project):
-    print "Checking image repo..."
+    # with open(os.path.join(project.work_dir, "finished.txt"), 'w') as _file: _file.write("check-repo")
+    # return
+    print("Checking image repo...")
     xterm_title("Checking image repo")
 
     try:
@@ -449,7 +599,19 @@ def check_repo_files(project):
         if project.type == "install":
             imagedeps = project.all_install_image_packages or repo.full_deps("yali")
         else:
-            imagedeps = project.all_packages
+            if 'Calamares' in project.all_packages:
+                imagedeps = project.all_packages
+            else:
+                imagedeps = project.all_install_image_packages  # or repo.full_deps("yali")
+
+        deps = []
+        for pack in imagedeps:
+            for dep in list(repo.full_deps(pack)):
+                if dep not in deps:
+                    deps.append(dep)
+
+        # print(len(deps))  # ## DİKKAT
+
         i = 0
         for name in imagedeps:
             i += 1
@@ -459,24 +621,27 @@ def check_repo_files(project):
             check_file(repo_dir, pak.uri, pak.sha1sum)
         sys.stdout.write("\n")
 
-        if project.type == "install":
-            repo_dir = project.install_repo_dir()
-            i = 0
-            for name in project.all_packages:
-                i += 1
-                sys.stdout.write("\r%-70.70s" % "Checking %d of %s packages" % (i, len(project.all_packages)))
-                sys.stdout.flush()
-                pak = repo.packages[name]
-                check_file(repo_dir, pak.uri, pak.sha1sum)
+        # if project.type == "install":
+        repo_dir = project.install_repo_dir()
+        i = 0
+        for name in project.all_packages:
+            i += 1
+            sys.stdout.write("\r%-70.70s" % "Checking %d of %s packages" % (i, len(project.all_packages)))
+            sys.stdout.flush()
+            pak = repo.packages[name]
+            check_file(repo_dir, pak.uri, pak.sha1sum)
+
         sys.stdout.write("\n")
+        with open(os.path.join(project.work_dir, "finished.txt"), 'w') as _file: _file.write("check-repo")
     except KeyboardInterrupt:
-        print "Keyboard Interrupt: check_repo() cancelled."
+        print("Keyboard Interrupt: check_repo() cancelled.")
         sys.exit(1)
+
 
 def make_image(project):
     global bus
 
-    print "Preparing install image..."
+    print("Preparing install image...")
     xterm_title("Preparing install image")
 
     try:
@@ -489,7 +654,7 @@ def make_image(project):
         run('umount %s/sys' % image_dir, ignore_error=True)
         image_dir = project.image_dir(clean=True)
         run('pisi --yes-all -D"%s" ar pisilinux-install %s --ignore-check' % (image_dir, repo_dir + "/pisi-index.xml.bz2"))
-        print "project type = ",project.type
+        print("project type = ", project.type)
         if project.type == "install":
             if project.all_install_image_packages:
                 install_image_packages = " ".join(project.all_install_image_packages)
@@ -505,17 +670,16 @@ def make_image(project):
         def chrun(cmd):
             run('chroot "%s" %s' % (image_dir, cmd))
 
-
         # FIXME: we write static initramfs.conf for live systems for now, hopefully we will make it dynamic later on
         # Note that this must be done before configure pending for the mkinitramfs use it
         f = file(os.path.join(image_dir, "etc/initramfs.conf"), "w")
         f.write("liveroot=LABEL=PisiLive\n")
         f.close()
 
-        os.mknod("%s/dev/null" % image_dir, 0666 | stat.S_IFCHR, os.makedev(1, 3))
-        os.mknod("%s/dev/console" % image_dir, 0666 | stat.S_IFCHR, os.makedev(5, 1))
-        os.mknod("%s/dev/random" % image_dir, 0666 | stat.S_IFCHR, os.makedev(1, 8))
-        os.mknod("%s/dev/urandom" % image_dir, 0666 | stat.S_IFCHR, os.makedev(1, 9))
+        os.mknod("%s/dev/null" % image_dir, 0o666 | stat.S_IFCHR, os.makedev(1, 3))
+        os.mknod("%s/dev/console" % image_dir, 0o666 | stat.S_IFCHR, os.makedev(5, 1))
+        os.mknod("%s/dev/random" % image_dir, 0o666 | stat.S_IFCHR, os.makedev(1, 8))
+        os.mknod("%s/dev/urandom" % image_dir, 0o666 | stat.S_IFCHR, os.makedev(1, 9))
 
         path = "%s/usr/share/baselayout/" % image_dir
         path2 = "%s/etc" % image_dir
@@ -524,13 +688,14 @@ def make_image(project):
         run('/bin/mount --bind /proc %s/proc' % image_dir)
         run('/bin/mount --bind /sys %s/sys' % image_dir)
 
-        #chrun("ln -s /dev/shm /run/shm")
+        # chrun("ln -s /dev/shm /run/shm")
         chrun("/sbin/ldconfig")
         chrun("/sbin/update-environment")
         chroot_comar(image_dir)
         chrun("/usr/bin/pisi configure-pending baselayout")
 
-        chrun("/usr/bin/pisi configure-pending")
+        chrun("/usr/bin/pisi configure-pending -dv")
+
         # Disable Nepomuk in live CDs
         if project.type == "live":
             try:
@@ -540,11 +705,11 @@ def make_image(project):
 
         if project.type == "install":
             # FIXME: Do not hard code installer name
-            dm_config ="DISPLAY_MANAGER=yali"
+            dm_config = "DISPLAY_MANAGER=yali"
 
             # Write default display manager config
             image_dir = project.image_dir()
-            #dest = os.path.join(image_dir, "etc/conf.d/xdm")
+            # dest = os.path.join(image_dir, "etc/conf.d/xdm")
             dest = os.path.join(image_dir, "etc/default/xdm")
 
             f = file(dest, "w")
@@ -555,18 +720,21 @@ def make_image(project):
 
         obj = bus.get_object("tr.org.pardus.comar", "/package/baselayout")
 
-        obj.setUser(0, "", "", "", "pisilinux", "", dbus_interface="tr.org.pardus.comar.User.Manager")
+        obj.setUser(0, "", "", "", "pisilinux", "",
+            dbus_interface="tr.org.pardus.comar.User.Manager")
         if project.type != "install":
-            obj.addUser(1000, "pisi", "Pisi Linux", "/home/pisi", "/bin/bash", "pisilinux", ["wheel", "users", "lp", "lpadmin", "cdrom", "floppy", "disk", "audio", "video", "power", "dialout"], [], [], dbus_interface="tr.org.pardus.comar.User.Manager")
+            obj.addUser(1000, "pisi", "Pisi Linux", "/home/pisi", "/bin/bash",
+            "live", ["wheel", "users", "lp", "lpadmin", "cdrom", "floppy",
+            "disk", "audio", "video", "power", "dialout"], [], [],
+            dbus_interface="tr.org.pardus.comar.User.Manager")
 
         path1 = os.path.join(image_dir, "usr/share/baselayout/inittab.live")
         path2 = os.path.join(image_dir, "etc/inittab")
         os.unlink(path2)
         run('mv "%s" "%s"' % (path1, path2))
 
-
-        if project.type != "install" and ("kde-workspace" in project.all_packages):
-            setup_live_sddm(project)            #setup_live_sddm olarak değiştirildi
+        if project.type != "install" and ("sddm" in project.all_packages):
+            setup_live_sddm(project)  # setup_live_sddm olarak değiştirildi
             setup_live_policykit_conf(project)
 
         if project.type == "install":
@@ -577,13 +745,15 @@ def make_image(project):
 
         os.utime(os.path.join(image_dir, "etc/profile.env"), (1, 1))
 
-        #chrun('killall comar')
+        # chrun('killall comar')
         run('umount %s/proc' % image_dir)
         run('umount %s/sys' % image_dir)
         chrun("rm -rf /run/dbus/*")
+        with open(os.path.join(project.work_dir, "finished.txt"), 'w') as _file: _file.write("make-live")
     except KeyboardInterrupt:
-        print "Keyboard Interrupt: make_image() cancelled."
+        print("Keyboard Interrupt: make_image() cancelled.")
         sys.exit(1)
+
 
 def generate_sort_list(iso_dir):
     # Sorts the packages in repo_dir according to their size
@@ -610,8 +780,71 @@ def generate_sort_list(iso_dir):
     return package_list
 
 
-def make_iso(project):
-    print "Preparing ISO..."
+
+
+def make_EFI(project, grub=False):
+
+    work_dir = os.path.join(project.work_dir)
+    img_dir = os.path.join(project.work_dir)
+    #configdir = "./config"  # os.path.join(project.config_files)
+    iso_dir = project.iso_dir()
+    efi_tmp = project.efi_tmp_path_dir(clean=True)
+    image_dir = project.image_dir()
+
+
+    efi_path = os.path.join(iso_dir, "EFI")
+
+    if not os.path.exists(efi_path):
+        os.makedirs(efi_path)
+        os.makedirs(os.path.join(efi_path, "boot"))
+
+
+    run("rm -rf %s/efi.img" % work_dir)
+
+
+    # grub #####################################################################
+    if grub:
+        def chrun(cmd):
+            run('chroot "%s" %s' % (image_dir, cmd))
+
+        run("cp data/mkgrubx64.sh %s/" % image_dir)
+        run("cp data/grub.cfg %s/" % image_dir)
+
+        chrun("/mkgrubx64.sh /grubx64.efi")
+
+        run("rm %s/mkgrubx64.sh" % image_dir)
+        run("rm %s/grub.cfg" % image_dir)
+    # grub #####################################################################
+
+    run("dd if=/dev/zero bs=1M count=40 of=%s/efi.img"% work_dir)
+    run("mkfs.vfat -n PisiLinux %s/efi.img"% work_dir)
+    run("mount %s/efi.img %s"% (work_dir,efi_tmp))
+
+
+    os.makedirs(os.path.join(efi_tmp, "EFI/boot"))
+    # os.makedirs(os.path.join(efi_tmp, "boot/efi/"))
+
+
+    # grub #####################################################################
+    if grub:
+        run("cp -r %s/EFI %s/" % (iso_dir, efi_tmp),ignore_error=True)
+        run("cp %s/grubx64.efi %s/EFI/boot/" % (image_dir, iso_dir),ignore_error=True)
+        run("cp %s/grubx64.efi %s/EFI/boot/" % (image_dir, efi_tmp),ignore_error=True)
+        run("rm %s/grubx64.efi" % image_dir)
+        run("rm %s/EFI/boot/loader.efi" % iso_dir)
+        # grub #####################################################################
+    else:
+        run("cp -r %s/EFI %s/" % (iso_dir, efi_tmp),ignore_error=True)
+        run("cp -r %s/loader %s/" % (iso_dir, efi_tmp),ignore_error=True)
+
+    run("umount %s"% efi_tmp,ignore_error=True)
+    run("umount -l %s"% efi_tmp,ignore_error=True)
+
+
+
+
+def make_iso(project, toUSB=False, dev="/dev/sdc1"):
+    print("Preparing ISO...")
     xterm_title("Preparing ISO")
 
     sort_cd_layout = False
@@ -619,13 +852,15 @@ def make_iso(project):
     try:
         iso_dir = project.iso_dir(clean=True)
         iso_file = project.iso_file(clean=True)
-        #image_dir = project.image_dir()
+        work_dir = project.work_dir
+        image_dir = project.image_dir()
         image_file = project.image_file()
-        image_path = os.path.join(iso_dir, "boot")
+        image_path = os.path.join(iso_dir, "pisi")
 
         if not os.path.exists(image_path):
             os.makedirs(image_path)
-        os.link(image_file, os.path.join(iso_dir, "boot/pisi.sqfs"))
+        print(image_file)
+        os.link(image_file, os.path.join(iso_dir, "pisi/pisi.sqfs"))
 
         def copy(src, dest):
             dest = os.path.join(iso_dir, dest)
@@ -641,38 +876,109 @@ def make_iso(project):
             for name in os.listdir(path):
                 if name != ".svn":
                     copy(os.path.join(path, name), name)
+        
+        
+        rep = project.get_repo()
+        def version(package, rep=rep):
+            if package in rep.packages.keys():
+                return rep.packages[package].version
+            else:
+                return "{%s}" % package
+        
+        print("release files formatting...")
+        # set version to release templates
+        release_ver = ""
+        with open(os.path.join(image_dir, "etc/pisilinux-release")) as rel:
+            release_ver = rel.read().split()[-1]
+        
+        path = os.path.join(iso_dir, "index.html")
+        index_text = ""
+        with open(path) as index:
+            index_text = index.read()
+            
+        with open(path, "w") as index:
+            index.write(index_text.replace("@release@", release_ver))
+        
+        
+        import re
+        path = os.path.join(iso_dir, "release-notes")
+        for name in os.listdir(path):
+            print("file formatting: {}".format(name))
+            rel_text = ""
+            with open(os.path.join(path, name), "r") as rel:
+                rel_text = rel.read()
+                res = re.findall(".*(\{.+\}).*", rel_text)
+                
+                if len(res) == 0: continue
+            
+                fmt = {}
+                for t in res:
+                    package = t[1:-1]
+                    if package == "release":
+                        fmt[package] = release_ver
+                    else:
+                        fmt[package] = version(package)
+                    
+            rel_text = rel_text.format(**fmt)
+            
+            with open(os.path.join(path, name), "w") as rel:
+                rel.write(rel_text)
+        
+        del rep
+        del index_text
+        del rel_text
 
         # setup_grub(project)
         setup_isolinux(project)
+        setup_efi(project)
+        make_EFI(project)
+        copy("./data/.miso", "")
+        run("cp -p %s/efi.img %s/." % (work_dir, iso_dir))
 
-        if project.type == "install":
+
+        # if project.type == "install":
+        if "Calamares" in project.all_packages:
+            run("rm -rf %s/license" % iso_dir, ignore_error=True)
+            run("rm -rf %s/release-notes" % iso_dir, ignore_error=True)
+        else:
             run('ln -s "%s" "%s"' % (project.install_repo_dir(), os.path.join(iso_dir, "repo")))
 
-        publisher="Pisi GNU/Linux http://www.pisilinux.org"
-        application="Pisi GNU/Linux Live Media"
-        label="PisiLive"
+        publisher = "Pisi GNU/Linux http://www.pisilinux.org"
+        application = "Pisi GNU/Linux Live Media"
+        label = "PisiLive"
 
-        the_sorted_iso_command='genisoimage -f -sort %s/repo/install.order -J -r -l -V "%s" -o "%s" -b boot/isolinux/isolinux.bin -c boot/isolinux/boot.cat -boot-info-table \
--uid 0 -gid 0 -udf -allow-limited-size -iso-level 3 -input-charset utf-8 -no-emul-boot -boot-load-size 4 \
--publisher "%s" -A "%s"  %s' % (iso_dir, label, iso_file, publisher, application, iso_dir)
+        the_sorted_iso_command = 'genisoimage -f -sort %s/repo/install.order \
+        -J -r -l -V "%s" -o "%s" -b isolinux/isolinux.bin \
+        -c isolinux/boot.cat -boot-info-table \
+        -uid 0 -gid 0 -udf -allow-limited-size -iso-level 3 \
+        -input-charset utf-8 -no-emul-boot -boot-load-size 4 \
+        -eltorito-alt-boot -e EFI/pisi/initrd.img -no-emul-boot \
+        -publisher "%s" -A "%s"  %s' % (iso_dir, label, iso_file, publisher,
+        application, iso_dir)
 
-        the_iso_command='genisoimage -f -J -r -l -V "%s" -o "%s" -b boot/isolinux/isolinux.bin -c boot/isolinux/boot.cat -boot-info-table \
--uid 0 -gid 0 -udf -allow-limited-size -iso-level 3 -input-charset utf-8 -no-emul-boot -boot-load-size 4 \
--publisher "%s" -A "%s"  %s' % (label, iso_file, publisher, application, iso_dir)
+        the_iso_command = 'genisoimage -f -J -r -l -V "%s" -o "%s" \
+        -b isolinux/isolinux.bin -c isolinux/boot.cat \
+        -boot-info-table -uid 0 -gid 0 -allow-limited-size -iso-level 3 \
+        -input-charset utf-8 -no-emul-boot -boot-load-size 4 \
+        -eltorito-alt-boot -e efi.img -no-emul-boot \
+        -publisher "%s" -A "%s"  %s' % (label, iso_file, publisher,
+            application, iso_dir) # -no-emul-boot
+
 
         # Generate sort_list for mkisofs and YALI
         # Disabled for now
         if sort_cd_layout:
             sorted_list = generate_sort_list(iso_dir)
             if sorted_list:
-                open("%s/repo/install.order" % iso_dir, "w").write("\n".join(["%s %d" % (k,v) for (k,v) in sorted_list]))
+                open("%s/repo/install.order" % iso_dir, "w").write("\n".join(["%s %d" % (k, v) for (k, v) in sorted_list]))
                 run(the_sorted_iso_command)
-
         else:
             run(the_iso_command)
         # convert iso to a hybrid one
-        run("isohybrid %s" % iso_file)
-
+        # run("isohybrid --uefi %s" % iso_file)
+        run("isohybrid %s -b %s" % (iso_file, "%s/usr/lib/syslinux/bios/isohdpfx.bin" % image_dir))
+            
+        with open(os.path.join(project.work_dir, "finished.txt"), 'w') as _file: _file.write("make-iso")
     except KeyboardInterrupt:
-        print "Keyboard Interrupt: make_iso() cancelled."
+        print("Keyboard Interrupt: make_iso() cancelled.")
         sys.exit(1)

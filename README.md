@@ -13,3 +13,4 @@ Requirements
  - python-qt5
  - python-qt5-devel
  - make
+ - python-pathlib2

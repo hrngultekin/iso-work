@@ -20,9 +20,11 @@ import piksemel
 import packages
 from repotools.packages import PackageCollection, PackageSet
 
+
 # no i18n yet
 def _(x):
     return x
+
 
 # Find out python version
 PYTHON_VER = ".".join(platform.python_version_tuple()[0:2])
@@ -246,8 +248,9 @@ class Project:
                     selectedPackages.append(tag.firstChild().data())
                 for tag in node.tags("Package"):
                     allPackages.append(tag.firstChild().data())
-                #print repoURI, "\n", selectedComponents, "\n", selectedPackages, "\n", allPackages
-                return (repoURI, selectedComponents, selectedPackages, allPackages)
+                # print repoURI, "\n", selectedComponents, "\n", selectedPackages, "\n", allPackages
+                return (repoURI, selectedComponents,
+                    selectedPackages, allPackages)
             return None
 
         def __collectionTranslations(node):
@@ -255,8 +258,9 @@ class Project:
             translations = {}
             if node:
                 for translation in node.tags("Translation"):
-                    translations[translation.getAttribute("language")]= (unicode(translation.getTagData("Title")),
-                                                                         unicode(translation.getTagData("Description")))
+                    translations[translation.getAttribute("language")] = (
+                        unicode(translation.getTagData("Title")),
+                        unicode(translation.getTagData("Description")))
                 return translations
             return None
 
@@ -307,7 +311,7 @@ class Project:
         else:
             packageSelectionTag = doc.getTag("PackageSelection")
             if packageSelectionTag:
-                self.repo_uri, self.selected_components, self.selected_packages, self.all_packages= __packageSelection(packageSelectionTag)
+                self.repo_uri, self.selected_components, self.selected_packages, self.all_packages = __packageSelection(packageSelectionTag)
 
             self.selected_components.sort()
             self.selected_packages.sort()
@@ -316,7 +320,6 @@ class Project:
         languageSelectionTag = doc.getTag("LanguageSelection")
         if languageSelectionTag:
             self.default_language, self.selected_languages = __languageSelection(languageSelectionTag)
-
 
         installImagePackagesTag = doc.getTag("InstallImagePackages")
         if installImagePackagesTag:
@@ -542,7 +545,6 @@ class Project:
 
         packages.sort()
         self.all_install_image_packages = packages
-        
 
     def image_repo_dir(self, clean=False):
         return self._get_dir("image_repo", clean)
@@ -555,6 +557,9 @@ class Project:
 
     def install_repo_dir(self, clean=False):
         return self._get_dir("install_repo", clean)
+
+    def efi_tmp_path_dir(self, clean=False):
+        return self._get_dir("efi_tmp", clean) 
 
     def iso_dir(self, clean=False):
         return self._get_dir("iso", clean)

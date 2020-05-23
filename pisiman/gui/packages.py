@@ -244,6 +244,7 @@ class PackagesDialog(QDialog, Ui_PackagesDialog):
 
         size = 0
         required_packages = []
+        count = 0
         for package in self.packages:
             for dep in self.repo.full_deps(package):
                 if dep not in required_packages and dep != package:
@@ -263,5 +264,5 @@ class PackagesDialog(QDialog, Ui_PackagesDialog):
             item.setRequired(required)
             if required or selected:
                 size += item.package.size
-
-        self.labelTotalSize.setText("%.3f MB" % (size / 1024.0 / 1024.0))
+                count += 1
+        self.labelTotalSize.setText("%.3f MB / %d paket" % (size / 1024.0 / 1024.0, count))

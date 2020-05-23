@@ -1,4 +1,4 @@
-Pisiman - Pisilinux ISO Creator
+Pisiman - Pisi ISO Creator
 ==============================
 
 Requirements
@@ -6,10 +6,8 @@ Requirements
  - cdrkit
  - syslinux
  - squashfs-tools
- - pyqtermwidget5 (Required for GUI)
- - python-sip
- - python-qt5
- - python-qt5-devel
- - make
- 
+ - pyqtermwidget (Required for GUI)
 
+New Requirements
+----------------
+ - dosfstools (Required for iso to formatted fat32 usb )
