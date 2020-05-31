@@ -14,6 +14,7 @@
 import os
 import sys
 import urllib2
+import requests
 import piksemel
 import random
 import string
@@ -46,32 +47,86 @@ class ExPackageCycle(ExPisiIndex):
     pass
 
 
+#def fetch_uri(base_uri, cache_dir, filename, console=None, update_repo=False):
+    ## Dont cache for local repos
+    #print(base_uri, filename)
+    #if base_uri.startswith("file://") and not filename.startswith("pisi-index.xml"):
+        #return os.path.join(base_uri[7:], filename)
+
+    ## Check that local file isnt older or has missing parts
+    #path = os.path.join(cache_dir, filename)
+    #if not os.path.exists(path) or (update_repo and filename.startswith("pisi-index.xml")):
+        #if console:
+            #console.started("Fetching '%s'..." % filename)
+        #try:
+            #connection = urllib2.urlopen(os.path.join(base_uri, filename))
+        #except ValueError:
+            #raise ExIndexBogus
+        #filedir = path[:path.rfind("/")]
+        #os.system("mkdir -p %s" % filedir)
+        #output = file(path, "w")
+        #total_size = int(connection.info()['Content-Length'])
+        #size = 0
+        #while size < total_size:
+            #data = connection.read(4096)
+            #output.write(data)
+            #size += len(data)
+            #if console:
+                #console.progress("Downloaded %d of %d bytes" % (size, total_size), 100 * size / total_size)
+        #output.close()
+        #connection.close()
+        #if console:
+            #console.finished()
+    #return path
+
+# TODO: indirme kısmı incelenecek
 def fetch_uri(base_uri, cache_dir, filename, console=None, update_repo=False):
     # Dont cache for local repos
     if base_uri.startswith("file://") and not filename.startswith("pisi-index.xml"):
         return os.path.join(base_uri[7:], filename)
-
+    #print(base_uri, filename)
     # Check that local file isnt older or has missing parts
     path = os.path.join(cache_dir, filename)
+    #size = 0
     if not os.path.exists(path) or (update_repo and filename.startswith("pisi-index.xml")):
         if console:
             console.started("Fetching '%s'..." % filename)
-        try:
-            connection = urllib2.urlopen(os.path.join(base_uri, filename))
-        except ValueError:
-            raise ExIndexBogus
+        if base_uri.startswith("file://"):
+            try:
+                connection = urllib2.urlopen(os.path.join(base_uri, filename))
+            except ValueError:
+                raise ExIndexBogus
+        else:
+            try:
+                addr = os.path.join(base_uri, filename)
+                connection = requests.get(addr, stream=True, verify=False)
+                head = requests.head(addr)
+                size = int(head.headers["Content-Length"])
+            except ValueError:
+                raise ExIndexBogus
+        
         filedir = path[:path.rfind("/")]
         os.system("mkdir -p %s" % filedir)
-        output = file(path, "w")
-        total_size = int(connection.info()['Content-Length'])
-        size = 0
-        while size < total_size:
-            data = connection.read(4096)
-            output.write(data)
-            size += len(data)
-            if console:
-                console.progress("Downloaded %d of %d bytes" % (size, total_size), 100 * size / total_size)
-        output.close()
+        
+        if base_uri.startswith("file://"):
+            output = open(path, "w")
+            total_size = int(connection.info()['Content-Length'])
+            size = 0
+            while size < total_size:
+                data = connection.read(4096)
+                output.write(data)
+                size += len(data)
+                if console:
+                    console.progress("Downloaded %d of %d bytes" % (size, total_size), 100 * size / total_size)
+            output.close()
+        else:
+            written = 0
+            with open(path, 'wb') as fd:
+                for chunk in connection.iter_content(chunk_size=128):
+                    fd.write(chunk)
+                    written += len(chunk)
+                    if console:
+                        console.progress("Downloaded %d of %d bytes" % (written, size), 100 * written / size)
         connection.close()
         if console:
             console.finished()
@@ -372,5 +427,3 @@ class Repository:
             self.size,
             self.inst_size
         )
-
-

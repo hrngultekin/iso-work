@@ -500,12 +500,12 @@ def squash_image(project):
 
     # DİKKAT: paket düzeltildikten sonra kaldırılacak!!!
     # plymouth test için eklendi ####################################################
-    run("cp -f {0}/usr/share/plymouth/plymouthd.defaults {0}/etc/plymouth/plymouthd.conf".format(image_dir))
+    # run("cp -f {0}/usr/share/plymouth/plymouthd.defaults {0}/etc/plymouth/plymouthd.conf".format(image_dir))
 
     if project.type == "install":
         if os.path.exists("%s/run/livemedia" % image_dir):
             run("rm %s/run/livemedia" % image_dir)
-        
+
         if os.path.exists("%s/home/pisi/.livemedia" % image_dir):
             run("rm %s/home/pisi/.livemedia" % image_dir)
     else:
@@ -782,7 +782,7 @@ def generate_sort_list(iso_dir):
 
 
 
-def make_EFI(project, grub=False):
+def make_EFI(project, grub=True):
 
     work_dir = os.path.join(project.work_dir)
     img_dir = os.path.join(project.work_dir)
@@ -827,11 +827,17 @@ def make_EFI(project, grub=False):
 
     # grub #####################################################################
     if grub:
-        run("cp -r %s/EFI %s/" % (iso_dir, efi_tmp),ignore_error=True)
-        run("cp %s/grubx64.efi %s/EFI/boot/" % (image_dir, iso_dir),ignore_error=True)
-        run("cp %s/grubx64.efi %s/EFI/boot/" % (image_dir, efi_tmp),ignore_error=True)
+        run("cp -rf %s/EFI %s/" % ("./data/efi_grub", efi_tmp),ignore_error=True)
+        run("cp -rf %s/EFI %s/" % ("./data/efi_grub", iso_dir),ignore_error=True)
+        run("cp %s/grubx64.efi %s/EFI/boot/bootx64.efi" % (image_dir, iso_dir),ignore_error=True)
+        run("cp %s/grubx64.efi %s/EFI/boot/bootx64.efi" % (image_dir, efi_tmp),ignore_error=True)
+
+        #run("cp %s/tr.gkb %s/EFI/boot/" % (image_dir, iso_dir),ignore_error=True)
+        #run("cp %s/en.gkb %s/EFI/boot/" % (image_dir, iso_dir),ignore_error=True)
+
         run("rm %s/grubx64.efi" % image_dir)
         run("rm %s/EFI/boot/loader.efi" % iso_dir)
+        #run("rm %s/EFI/boot/loader.efi" % efi_tmp)
         # grub #####################################################################
     else:
         run("cp -r %s/EFI %s/" % (iso_dir, efi_tmp),ignore_error=True)
@@ -876,30 +882,30 @@ def make_iso(project, toUSB=False, dev="/dev/sdc1"):
             for name in os.listdir(path):
                 if name != ".svn":
                     copy(os.path.join(path, name), name)
-        
-        
+
+
         rep = project.get_repo()
         def version(package, rep=rep):
             if package in rep.packages.keys():
                 return rep.packages[package].version
             else:
                 return "{%s}" % package
-        
+
         print("release files formatting...")
         # set version to release templates
         release_ver = ""
         with open(os.path.join(image_dir, "etc/pisilinux-release")) as rel:
             release_ver = rel.read().split()[-1]
-        
+
         path = os.path.join(iso_dir, "index.html")
         index_text = ""
         with open(path) as index:
             index_text = index.read()
-            
+
         with open(path, "w") as index:
             index.write(index_text.replace("@release@", release_ver))
-        
-        
+
+
         import re
         path = os.path.join(iso_dir, "release-notes")
         for name in os.listdir(path):
@@ -908,9 +914,9 @@ def make_iso(project, toUSB=False, dev="/dev/sdc1"):
             with open(os.path.join(path, name), "r") as rel:
                 rel_text = rel.read()
                 res = re.findall(".*(\{.+\}).*", rel_text)
-                
+
                 if len(res) == 0: continue
-            
+
                 fmt = {}
                 for t in res:
                     package = t[1:-1]
@@ -918,12 +924,12 @@ def make_iso(project, toUSB=False, dev="/dev/sdc1"):
                         fmt[package] = release_ver
                     else:
                         fmt[package] = version(package)
-                    
+
             rel_text = rel_text.format(**fmt)
-            
+
             with open(os.path.join(path, name), "w") as rel:
                 rel.write(rel_text)
-        
+
         del rep
         del index_text
         del rel_text
@@ -956,14 +962,27 @@ def make_iso(project, toUSB=False, dev="/dev/sdc1"):
         -publisher "%s" -A "%s"  %s' % (iso_dir, label, iso_file, publisher,
         application, iso_dir)
 
-        the_iso_command = 'genisoimage -f -J -r -l -V "%s" -o "%s" \
-        -b isolinux/isolinux.bin -c isolinux/boot.cat \
-        -boot-info-table -uid 0 -gid 0 -allow-limited-size -iso-level 3 \
-        -input-charset utf-8 -no-emul-boot -boot-load-size 4 \
-        -eltorito-alt-boot -e efi.img -no-emul-boot \
-        -publisher "%s" -A "%s"  %s' % (label, iso_file, publisher,
-            application, iso_dir) # -no-emul-boot
+        #the_iso_command = 'genisoimage -f -J -r -l -V "%s" -o "%s" \
+        #-b isolinux/isolinux.bin -c isolinux/boot.cat \
+        #-boot-info-table -uid 0 -gid 0 -allow-limited-size -iso-level 3 \
+        #-input-charset utf-8 -no-emul-boot -boot-load-size 4 \
+        #-eltorito-alt-boot -e efi.img -no-emul-boot \
+        #-publisher "%s" -A "%s"  %s' % (label, iso_file, publisher,
+            #application, iso_dir)
 
+        the_iso_command = 'xorriso -as mkisofs \
+        -f  -V "%s"\
+        -o "%s" \
+        -isohybrid-mbr /usr/lib/syslinux/bios/isohdpfx.bin \
+        -c isolinux/boot.cat \
+        -b isolinux/isolinux.bin \
+        -no-emul-boot -boot-load-size 4 -boot-info-table \
+        -eltorito-alt-boot \
+        -e efi.img \
+        -no-emul-boot \
+        -isohybrid-gpt-basdat \
+        -publisher "%s" -A "%s"  %s' % (label, iso_file, publisher,
+            application, iso_dir)
 
         # Generate sort_list for mkisofs and YALI
         # Disabled for now
@@ -976,8 +995,8 @@ def make_iso(project, toUSB=False, dev="/dev/sdc1"):
             run(the_iso_command)
         # convert iso to a hybrid one
         # run("isohybrid --uefi %s" % iso_file)
-        run("isohybrid %s -b %s" % (iso_file, "%s/usr/lib/syslinux/bios/isohdpfx.bin" % image_dir))
-            
+        #run("isohybrid %s -b %s" % (iso_file, "%s/usr/lib/syslinux/bios/isohdpfx.bin" % image_dir))
+
         with open(os.path.join(project.work_dir, "finished.txt"), 'w') as _file: _file.write("make-iso")
     except KeyboardInterrupt:
         print("Keyboard Interrupt: make_iso() cancelled.")
