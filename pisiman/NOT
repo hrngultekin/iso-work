@@ -1,5 +1,5 @@
 Eski arayüz için gui/main.py dosyasındaki 32. satırı yorum haline getirip 29. satır aktifleştirin
 
-
 Düzgün çalışması için bir defa make komutunu çalıştırın, 
-Make komutu hata döndürürse sudo pisi it -c system-devel komutunu çalıştırın, geliştirici paketleri sisteme yüklenmesinden sonra tekrar make komutunu çalıştırın.
+Make komutu hata döndürürse sudo pisi it -c system-devel komutunu çalıştırın, 
+geliştirici paketleri sisteme yüklenmesinden sonra tekrar make komutunu çalıştırın.
