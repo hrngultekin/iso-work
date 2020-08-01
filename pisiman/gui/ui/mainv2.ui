@@ -31,62 +31,7 @@
        <layout class="QGridLayout" name="gridLayout_2">
         <item row="0" column="0">
          <layout class="QGridLayout" name="gridLayout">
-          <item row="6" column="1" colspan="2">
-           <widget class="QComboBox" name="comboType">
-            <item>
-             <property name="text">
-              <string>Installation Image</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Live Image</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="0" column="1" colspan="3">
-           <widget class="QLineEdit" name="lineTitle">
-            <property name="toolTip">
-             <string>The title of the Pardus image</string>
-            </property>
-            <property name="placeholderText">
-             <string>Image Title</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>Image title</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="label_3">
-            <property name="text">
-             <string>Repository</string>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="1" colspan="2">
-           <widget class="QLineEdit" name="lineWorkFolder">
-            <property name="toolTip">
-             <string>Path to the directory where Pardusman will work and create the related files and directories</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QLabel" name="label_4">
-            <property name="text">
-             <string>Release files</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="1" colspan="2">
-           <widget class="QLineEdit" name="linePluginPackage"/>
-          </item>
-          <item row="6" column="3">
+          <item row="7" column="3">
            <widget class="QComboBox" name="comboCompression">
             <item>
              <property name="text">
@@ -110,31 +55,20 @@
             </item>
            </widget>
           </item>
+          <item row="4" column="1" colspan="2">
+           <widget class="QLineEdit" name="linePluginPackage"/>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>Repository</string>
+            </property>
+           </widget>
+          </item>
           <item row="3" column="3">
            <widget class="QPushButton" name="pushBrowseReleaseFiles">
             <property name="text">
              <string>Browse</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0">
-           <widget class="QLabel" name="label_6">
-            <property name="text">
-             <string>Plugin package</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1" colspan="3">
-           <widget class="QLineEdit" name="lineParameters">
-            <property name="toolTip">
-             <string>Extra parameters to pass to the kernel command line during boot.</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1" colspan="2">
-           <widget class="QLineEdit" name="lineReleaseFiles">
-            <property name="toolTip">
-             <string>Path to the local directory which contains metadata about the image like the release notes, etc.</string>
             </property>
            </widget>
           </item>
@@ -151,20 +85,6 @@
             </property>
            </widget>
           </item>
-          <item row="6" column="0">
-           <widget class="QLabel" name="label_7">
-            <property name="text">
-             <string>Image type</string>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="0">
-           <widget class="QLabel" name="label_2">
-            <property name="text">
-             <string>Work folder</string>
-            </property>
-           </widget>
-          </item>
           <item row="2" column="3">
            <widget class="QPushButton" name="pushBrowseRepository">
             <property name="sizePolicy">
@@ -178,10 +98,55 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="1" colspan="2">
-           <widget class="QLineEdit" name="lineRepository">
+          <item row="7" column="0">
+           <widget class="QLabel" name="label_7">
+            <property name="text">
+             <string>Image type</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1" colspan="3">
+           <widget class="QLineEdit" name="lineTitle">
             <property name="toolTip">
-             <string>Local or remote URL of the repository index from which the image will be created</string>
+             <string>The title of the Pardus image</string>
+            </property>
+            <property name="placeholderText">
+             <string>Image Title</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1" colspan="3">
+           <widget class="QLineEdit" name="lineParameters">
+            <property name="toolTip">
+             <string>Extra parameters to pass to the kernel command line during boot.</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="1" colspan="2">
+           <widget class="QComboBox" name="comboType">
+            <item>
+             <property name="text">
+              <string>Installation Image</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Live Image</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="3" column="1" colspan="2">
+           <widget class="QLineEdit" name="lineReleaseFiles">
+            <property name="toolTip">
+             <string>Path to the local directory which contains metadata about the image like the release notes, etc.</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="3">
+           <widget class="QPushButton" name="pushBrowseWorkFolder">
+            <property name="text">
+             <string>Browse</string>
             </property>
            </widget>
           </item>
@@ -192,10 +157,59 @@
             </property>
            </widget>
           </item>
-          <item row="5" column="3">
-           <widget class="QPushButton" name="pushBrowseWorkFolder">
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_4">
             <property name="text">
-             <string>Browse</string>
+             <string>Release files</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="0">
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>Work folder</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>Image title</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1" colspan="2">
+           <widget class="QLineEdit" name="lineWorkFolder">
+            <property name="toolTip">
+             <string>Path to the directory where Pardusman will work and create the related files and directories</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1" colspan="2">
+           <widget class="QLineEdit" name="lineRepository">
+            <property name="toolTip">
+             <string>Local or remote URL of the repository index from which the image will be created</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="label_6">
+            <property name="text">
+             <string>Plugin package</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="label_8">
+            <property name="text">
+             <string>Live iso repo</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QLineEdit" name="lineLiveIsoRepo">
+            <property name="text">
+             <string/>
             </property>
            </widget>
           </item>

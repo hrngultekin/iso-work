@@ -18,7 +18,8 @@ import tempfile
 # Qt
 import QTermWidget
 
-from PyQt5.QtWidgets import QMessageBox, QMainWindow, QFileDialog, QListWidgetItem, QAction
+from PyQt5.QtWidgets import (QMessageBox, QMainWindow, QFileDialog,
+                             QListWidgetItem, QAction)
 from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtCore import pyqtSignal, QFile, Qt
 
@@ -26,7 +27,7 @@ from PyQt5.QtCore import pyqtSignal, QFile, Qt
 # UI
 
 # eski kullanıcı arayüzü
-#from gui.ui.main import Ui_MainWindow
+# from gui.ui.main import Ui_MainWindow
 
 # yeni kullanıcı arayüzü
 from gui.ui.mainv2 import Ui_MainWindow
@@ -41,13 +42,13 @@ from gui.packagecollection import PackageCollectionDialog
 from gui.progress import Progress
 
 # Repository tools
-from repotools.packages import Repository, ExIndexBogus, ExPackageCycle, ExPackageMissing
+from repotools.packages import (Repository, ExIndexBogus, ExPackageCycle,
+                                ExPackageMissing)
 from repotools.project import Project, ExProjectMissing, ExProjectBogus
 
 import gettext
-_ = lambda x:gettext.ldgettext("pardusman", x)
 
-
+_ = lambda x: gettext.ldgettext("pardusman", x)
 
 
 def get_finished_status(project):
@@ -67,6 +68,7 @@ class PackageCollectionListItem(QListWidgetItem):
         self.collection = collection
         self.setText(collection.translations[language][0])
 
+
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, args):
         QMainWindow.__init__(self)
@@ -77,12 +79,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.terminal = QTermWidget.QTermWidget()
         self.terminal.setHistorySize(-1)
         self.terminal.setScrollBarPosition(2)
-        #self.terminal.setColorScheme(0)
-        #self.terminal.setTerminalFont(QFont('Terminus'))
+        # self.terminal.setColorScheme(0)
+        font = QFont("Droid Sans Mono")  # DejaVu Sans Mono")#Oxygen Mono")
+        font.setPointSize(10)
+        self.terminal.setTerminalFont(font)
+
+        self.terminal.setColorScheme(
+            "/usr/share/qtermwidget5/color-schemes/BreezeModified.colorscheme")
+
         self.terminalLayout.addWidget(self.terminal)
         self.terminal.show()
 
-        #self.collectionFrame.hide()
+        # self.collectionFrame.hide()
 
         # Arguments
         self.args = args
@@ -100,14 +108,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionNew.triggered.connect(self.slotNew)
         self.actionOpen.triggered.connect(self.slotOpen)
         self.actionSave.triggered.connect(self.slotSave)
-	self.actionSaveAs.triggered.connect(self.slotSaveAs)
+        self.actionSaveAs.triggered.connect(self.slotSaveAs)
         self.actionExit.triggered.connect(self.close)
 
         # Project menu
         self.actionUpdateRepo.triggered.connect(self.slotUpdateRepo)
         self.actionLanguages.triggered.connect(self.slotSelectLanguages)
         self.actionPackages.triggered.connect(self.slotSelectPackages)
-        self.actionInstallationImagePackages.triggered.connect(self.slotSelectInstallImagePackages)
+        self.actionInstallationImagePackages.triggered.connect(
+            self.slotSelectInstallImagePackages)
         self.actionMakeImage.triggered.connect(self.slotMakeImage)
 
         self.actionMake_Repo.triggered.connect(self.slotMakeRepo)
@@ -116,27 +125,33 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionPack_Live.triggered.connect(self.slotPackLive)
         self.actionMake_Iso.triggered.connect(self.slotMakeIso)
 
-        self.actionDownloadMissingPackages.triggered.connect(self.slotDownloadMissingPackages)
+        self.actionDownloadMissingPackages.triggered.connect(
+            self.slotDownloadMissingPackages)
 
         # Browse buttons
         self.pushBrowseRepository.clicked.connect(self.slotBrowseRepository)
         self.pushBrowseWorkFolder.clicked.connect(self.slotBrowseWorkFolder)
-        self.pushBrowsePluginPackage.clicked.connect(self.slotBrowsePluginPackage)
-        self.pushBrowseReleaseFiles.clicked.connect(self.slotBrowseReleaseFiles)
+        self.pushBrowsePluginPackage.clicked.connect(
+            self.slotBrowsePluginPackage)
+        self.pushBrowseReleaseFiles.clicked.connect(
+            self.slotBrowseReleaseFiles)
 
         # Change Package Selection
         self.pushAddCollection.clicked.connect(self.slotAddPackageCollection)
-        self.pushModifyCollection.clicked.connect(self.slotModifyPackageCollection)
-        self.pushRemoveCollection.clicked.connect(self.slotRemovePackageCollection)
-        self.pushSetDefaultCollection.clicked.connect(self.slotSetDefaultCollection)
-        self.checkCollection.stateChanged[int].connect(self.slotShowPackageCollection)
-        self.listPackageCollection.itemClicked[QListWidgetItem].connect(self.slotClickedCollection)
+        self.pushModifyCollection.clicked.connect(
+            self.slotModifyPackageCollection)
+        self.pushRemoveCollection.clicked.connect(
+            self.slotRemovePackageCollection)
+        self.pushSetDefaultCollection.clicked.connect(
+            self.slotSetDefaultCollection)
+        self.checkCollection.stateChanged[int].connect(
+            self.slotShowPackageCollection)
+        self.listPackageCollection.itemClicked[QListWidgetItem].connect(
+            self.slotClickedCollection)
 
         self.menuCommands.hovered[QAction].connect(self.updateCommands)
         # Initialize
         self.initialize()
-
-
 
         self.updateCommands()
 
@@ -163,18 +178,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             "Open..." menu item fires this function.
         """
         if not filename:
-            filename = QFileDialog.getOpenFileName(self, _("Select project file"), "../project-files", "Xml Files (*.xml)")
-            filename=filename[0]
+            filename = QFileDialog.getOpenFileName(
+                self, _("Select project file"), "../project-files",
+                "Xml Files (*.xml)")
+            filename = filename[0]
         if filename:
             self.project = Project()
 
             try:
                 self.project.open(filename)
             except ExProjectMissing:
-                QMessageBox.warning(self, self.title, _("Project file is missing."))
+                QMessageBox.warning(
+                    self, self.title, _("Project file is missing."))
                 return
             except ExProjectBogus:
-                QMessageBox.warning(self, self.title, _("Project file is corrupt."))
+                QMessageBox.warning(
+                    self, self.title, _("Project file is corrupt."))
                 return
             self.loadProject()
             self.updateCommands()
@@ -193,8 +212,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
             "Save As..." menu item fires this function.
         """
-        filename = QFileDialog.getSaveFileName(self, _("Save project"), os.getcwd(), "Xml Files (*.xml)")
-        filename=filename[0]
+        filename = QFileDialog.getSaveFileName(
+            self, _("Save project"), os.getcwd(), "Xml Files (*.xml)")
+        filename = filename[0]
         if filename:
             self.project.filename = unicode(filename)
             self.slotSave()
@@ -228,7 +248,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         _dir = self.get_path(self.lineRepository.text())
 
-        filename = QFileDialog.getOpenFileName(self, _("Select repository index"), _dir, "Pisi Index Files(*-index.xml *-index.xml.xz)")
+        filename = QFileDialog.getOpenFileName(
+            self, _("Select repository index"), _dir,
+            "Pisi Index Files(*-index.xml *-index.xml.xz)")
         filename = filename[0]
         if filename:
             filename = unicode(filename)
@@ -242,9 +264,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         _dir = self.get_path(self.linePluginPackage.text())
 
-
-        filename = QFileDialog.getOpenFileName(self, _("Select plugin package"), _dir, "Pisi Files(*.pisi)")
-        filename=filename[0]
+        filename = QFileDialog.getOpenFileName(
+            self, _("Select plugin package"), _dir, "Pisi Files(*.pisi)")
+        filename = filename[0]
         if filename:
             self.linePluginPackage.setText(filename)
 
@@ -273,17 +295,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.initializeRepo()
 
         if not self.project.selected_languages:
-            QMessageBox.warning(self, self.title, _("Installation Languages is not selected."))
+            QMessageBox.warning(
+                self, self.title, _("Installation Languages is not selected."))
             return
 
         dialog = PackageCollectionDialog(self, self.repo, self.project)
         if dialog.exec_():
-            item = PackageCollectionListItem(self.listPackageCollection, dialog.collection, self.project.default_language)
+            item = PackageCollectionListItem(
+                self.listPackageCollection, dialog.collection,
+                self.project.default_language)
             self.project.package_collections.append(item.collection)
 
             if self.listPackageCollection.count() == 1:
                 item.collection.default = "True"
-
 
         self.updateCollection()
 
@@ -293,17 +317,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if not self.repo:
             self.initializeRepo()
 
-        dialog = PackageCollectionDialog(self, self.repo, self.project, item.collection)
+        dialog = PackageCollectionDialog(
+            self, self.repo, self.project, item.collection)
         if dialog.exec_():
             if not item.collection._id == dialog.collection._id:
-                item.setText(dialog.collection.translations[self.project.default_language][0])
+                item.setText(
+                    dialog.collection.translations[
+                        self.project.default_language][0])
             item.collection = dialog.collection
 
         self.updateCollection()
 
     def slotRemovePackageCollection(self):
         for item in self.listPackageCollection.selectedItems():
-            self.listPackageCollection.takeItem(self.listPackageCollection.row(item))
+            self.listPackageCollection.takeItem(
+                self.listPackageCollection.row(item))
 
         self.updateCollection()
 
@@ -316,24 +344,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.pushSetDefaultCollection.setChecked(False)
 
     def slotSetDefaultCollection(self):
-        if self.listPackageCollection.currentItem() and not self.listPackageCollection.currentItem().collection.default:
-            self.listPackageCollection.currentItem().collection.default = "True"
+        if self.listPackageCollection.currentItem() and \
+                not self.listPackageCollection.currentItem(
+                ).collection.default:
+            self.listPackageCollection.currentItem(
+            ).collection.default = "True"
             currentIndex = self.listPackageCollection.currentRow()
             for index in xrange(self.listPackageCollection.count()):
                 if index == currentIndex:
                     pass
                 else:
-                    self.listPackageCollection.item(index).collection.default = ""
+                    self.listPackageCollection.item(
+                        index).collection.default = ""
 
             self.pushSetDefaultCollection.setChecked(True)
 
-
     def slotShowPackageCollection(self, state):
         if state == Qt.Checked:
-            #self.collectionFrame.show()
+            # self.collectionFrame.show()
             self.actionPackages.setVisible(False)
         else:
-            #self.collectionFrame.hide()
+            # self.collectionFrame.hide()
             self.actionPackages.setVisible(True)
 
     def slotSelectLanguages(self):
@@ -355,7 +386,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if not self.updateRepo():
                 return
 
-        dialog = PackagesDialog(self, self.repo, self.project.selected_packages, self.project.selected_components)
+        dialog = PackagesDialog(
+            self, self.repo, self.project.selected_packages,
+            self.project.selected_components)
 
         if dialog.exec_():
             self.project.selected_packages = dialog.packages
@@ -372,10 +405,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if not self.updateRepo():
                 return
 
-        dialog = PackagesDialog(self, \
-                                self.repo, \
-                                self.project.selected_install_image_packages, \
-                                self.project.selected_install_image_components)
+        dialog = PackagesDialog(
+            self, self.repo, self.project.selected_install_image_packages,
+            self.project.selected_install_image_components)
 
         if dialog.exec_():
             self.project.selected_install_image_packages = dialog.packages
@@ -393,14 +425,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def updateCommands(self):
         state = get_finished_status(self.project)
-        #print(state)
+        # print(state)
 
         self.actionCheck_Repo.setEnabled(state >= 0)
         self.actionMake_Live.setEnabled(state >= 1)
         self.actionPack_Live.setEnabled(state >= 2)
         self.actionMake_Iso.setEnabled(state >= 3)
-
-
 
     def slotMakeImage(self):
         """
@@ -422,7 +452,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             app_path = os.path.join(os.getcwd(), app_path)
 
         # Konsole Mode
-        # cmd = 'konsole --noclose --workdir "%s" -e "%s" make "%s"' % (os.getcwd(), app_path, temp_project.name)
+        # cmd = 'konsole --noclose --workdir "%s" -e "%s" make "%s"' \
+        # % (os.getcwd(), app_path, temp_project.name)
         # subprocess.Popen(["xdg-su", "-u", "root", "-c", cmd])
 
         cmd = '%s make %s' % (app_path, temp_project.name)
@@ -447,7 +478,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             app_path = os.path.join(os.getcwd(), app_path)
 
         # Konsole Mode
-        # cmd = 'konsole --noclose --workdir "%s" -e "%s" make "%s"' % (os.getcwd(), app_path, temp_project.name)
+        # cmd = 'konsole --noclose --workdir "%s" -e "%s" make "%s"' \
+        # % (os.getcwd(), app_path, temp_project.name)
         # subprocess.Popen(["xdg-su", "-u", "root", "-c", cmd])
 
         cmd = '%s make-repo %s' % (app_path, temp_project.name)
@@ -472,7 +504,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             app_path = os.path.join(os.getcwd(), app_path)
 
         # Konsole Mode
-        # cmd = 'konsole --noclose --workdir "%s" -e "%s" make "%s"' % (os.getcwd(), app_path, temp_project.name)
+        # cmd = 'konsole --noclose --workdir "%s" -e "%s" make "%s"' \
+        # % (os.getcwd(), app_path, temp_project.name)
         # subprocess.Popen(["xdg-su", "-u", "root", "-c", cmd])
 
         cmd = '%s check-repo %s' % (app_path, temp_project.name)
@@ -497,14 +530,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             app_path = os.path.join(os.getcwd(), app_path)
 
         # Konsole Mode
-        # cmd = 'konsole --noclose --workdir "%s" -e "%s" make "%s"' % (os.getcwd(), app_path, temp_project.name)
+        # cmd = 'konsole --noclose --workdir "%s" -e "%s" make "%s"' \
+        # % (os.getcwd(), app_path, temp_project.name)
         # subprocess.Popen(["xdg-su", "-u", "root", "-c", cmd])
 
         cmd = '%s make-live %s' % (app_path, temp_project.name)
         self.terminal.sendText("sudo %s\n" % cmd)
         self.terminal.setFocus()
         self.updateCommands()
-
 
     def slotPackLive(self):
         """
@@ -523,14 +556,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             app_path = os.path.join(os.getcwd(), app_path)
 
         # Konsole Mode
-        # cmd = 'konsole --noclose --workdir "%s" -e "%s" make "%s"' % (os.getcwd(), app_path, temp_project.name)
+        # cmd = 'konsole --noclose --workdir "%s" -e "%s" make "%s"' \
+        # % (os.getcwd(), app_path, temp_project.name)
         # subprocess.Popen(["xdg-su", "-u", "root", "-c", cmd])
 
         cmd = '%s pack-live %s' % (app_path, temp_project.name)
         self.terminal.sendText("sudo %s\n" % cmd)
         self.terminal.setFocus()
         self.updateCommands()
-
 
     def slotMakeIso(self):
         """
@@ -549,7 +582,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             app_path = os.path.join(os.getcwd(), app_path)
 
         # Konsole Mode
-        # cmd = 'konsole --noclose --workdir "%s" -e "%s" make "%s"' % (os.getcwd(), app_path, temp_project.name)
+        # cmd = 'konsole --noclose --workdir "%s" -e "%s" make "%s"' \
+        # % (os.getcwd(), app_path, temp_project.name)
         # subprocess.Popen(["xdg-su", "-u", "root", "-c", cmd])
 
         cmd = '%s make-iso %s' % (app_path, temp_project.name)
@@ -560,20 +594,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def updateCollection(self):
         self.project.package_collections = []
         for index in xrange(self.listPackageCollection.count()):
-            self.project.package_collections.append(self.listPackageCollection.item(index).collection)
+            self.project.package_collections.append(
+                self.listPackageCollection.item(index).collection)
 
     def checkProject(self):
         """
             Checks required fields for the project.
         """
         if not len(self.lineTitle.text()):
-            QMessageBox.warning(self, self.windowTitle(),  _("Image title is missing."))
+            QMessageBox.warning(
+                self, self.windowTitle(),  _("Image title is missing."))
             return False
         if not len(self.lineRepository.text()):
-            QMessageBox.warning(self, self.windowTitle(), _("Repository URL is missing."))
+            QMessageBox.warning(
+                self, self.windowTitle(), _("Repository URL is missing."))
             return False
         if not len(self.lineWorkFolder.text()):
-            QMessageBox.warning(self, self.windowTitle(),  _("Work folder is missing."))
+            QMessageBox.warning(
+                self, self.windowTitle(),  _("Work folder is missing."))
             return False
         return True
 
@@ -584,11 +622,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.project.title = unicode(self.lineTitle.text())
         self.project.repo_uri = unicode(self.lineRepository.text())
         self.project.work_dir = unicode(self.lineWorkFolder.text())
+        self.project.live_repo_uri = unicode(self.lineLiveIsoRepo.text())
         self.project.release_files = unicode(self.lineReleaseFiles.text())
         self.project.plugin_package = unicode(self.linePluginPackage.text())
         self.project.extra_params = unicode(self.lineParameters.text())
         self.project.type = ["install", "live"][self.comboType.currentIndex()]
-        self.project.squashfs_comp_type = ["xz", "gzip", "lzma", "lzo"][self.comboCompression.currentIndex()]
+        self.project.squashfs_comp_type = [
+            "xz", "gzip", "lzma", "lzo"][self.comboCompression.currentIndex()]
         if self.checkCollection.isChecked():
             self.updateCollection()
         else:
@@ -601,25 +641,31 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.lineTitle.setText(unicode(self.project.title))
         self.lineRepository.setText(unicode(self.project.repo_uri))
         self.lineWorkFolder.setText(unicode(self.project.work_dir))
+        self.lineLiveIsoRepo.setText(unicode(self.project.live_repo_uri))
         self.lineReleaseFiles.setText(unicode(self.project.release_files))
         self.linePluginPackage.setText(unicode(self.project.plugin_package))
         self.lineParameters.setText(unicode(self.project.extra_params))
-        self.comboType.setCurrentIndex(["install", "live"].index(self.project.type))
-        self.comboCompression.setCurrentIndex(["xz","gzip", "lzma", "lzo"].index(self.project.squashfs_comp_type))
+        self.comboType.setCurrentIndex(
+            ["install", "live"].index(self.project.type))
+        self.comboCompression.setCurrentIndex(
+            ["xz", "gzip", "lzma", "lzo"].index(
+                self.project.squashfs_comp_type))
 
         self.listPackageCollection.clear()
         if self.project.package_collections:
-            for index, collection in enumerate(self.project.package_collections):
-                PackageCollectionListItem(self.listPackageCollection, collection, self.project.default_language)
+            for index, collection in enumerate(
+                    self.project.package_collections):
+                PackageCollectionListItem(
+                    self.listPackageCollection, collection,
+                    self.project.default_language)
                 if collection.default:
                     self.listPackageCollection.setCurrentRow(index)
             self.checkCollection.setChecked(True)
         else:
             self.checkCollection.setChecked(False)
 
-
+# FIXME: her paket tek tek kontrol ediliyor daha iyi bir fonksiyon yazılmalı
     def slotDownloadMissingPackages(self):
-        # FIXME: her paket tek tek kontrol ediliyor daha iyi bir fonksiyon yazılmalı
         while True:
             # Progress dialog
             self.progress = Progress(self)
@@ -627,17 +673,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.updateProject()
             # Get repository
             try:
-                self.repo = self.project.get_repo(self.progress, update_repo=True)
-            except ExPackageMissing, e:
+                self.repo = self.project.get_repo(
+                    self.progress, update_repo=True)
+            except ExPackageMissing as e:
                 self.progress.finished()
 
                 curdir = os.getcwd()
 
                 repo_path = os.path.dirname(self.project.repo_uri)
-                if repo_path.startswith("file:///"): repo_path = repo_path[7:]
-                print(_("Package index has errors. '%s' depends on non-existing '%s'.") % e.args)
+                if repo_path.startswith("file:///"):
+                    repo_path = repo_path[7:]
+                print(_("Package index has errors. \
+                    '%s' depends on non-existing '%s'.") % e.args)
                 os.chdir(repo_path)
-                os.system("pisi fc {}".format(" ".join(e.args[1:])))
+                os.system("pisi fc {} --runtime-deps".format(
+                    " ".join(e.args[1:])))
                 os.system("pisi ix --skip-signing")
 
                 os.chdir(curdir)
@@ -655,40 +705,48 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.updateProject()
         # Get repository
         try:
-            self.repo = self.project.get_repo(self.progress, update_repo=update_repo)
-        except ExIndexBogus, e:
+            self.repo = self.project.get_repo(
+                self.progress, update_repo=update_repo)
+        except ExIndexBogus as e:
+            # print(e.args[0])
             self.progress.finished()
-            QMessageBox.warning(self, self.title, _("Unable to load package index. URL is wrong, or file is corrupt."))
+            QMessageBox.warning(self, self.title, _("Unable to load package \
+                index. URL is wrong, or file is corrupt."))
             return False
-        except ExPackageCycle, e:
+        except ExPackageCycle as e:
             self.progress.finished()
             cycle = " > ".join(e.args[0])
-            QMessageBox.warning(self, self.title, _("Package index has errors. Cyclic dependency found:\n  %s.") % cycle)
+            QMessageBox.warning(self, self.title, _("Package index has errors.\
+                 Cyclic dependency found:\n  %s.") % cycle)
             return False
-        except ExPackageMissing, e:
+        except ExPackageMissing as e:
             self.progress.finished()
-            print("============================================================")
-            QMessageBox.warning(self, self.title, _("Package index has errors. '%s' depends on non-existing '%s'.") % e.args)
+            QMessageBox.warning(self, self.title, _("Package index has errors.\
+            '%s' depends on non-existing '%s'.") % e.args)
             return False
         else:
             self.progress.finished()
 
         missing_components, missing_packages = self.project.get_missing()
         if len(missing_components):
-            QMessageBox.warning(self, self.title, _("There are missing components: {}. Removing.".format(", ".join(missing_components))))
+            QMessageBox.warning(self, self.title, _("There are missing \
+            components: {}. Removing.".format(", ".join(missing_components))))
             for component in missing_components:
                 if component in self.project.selected_components:
                     self.project.selected_components.remove(component)
-                    self.project.selected_install_image_components.remove(component)
+                    self.project.selected_install_image_components.remove(
+                        component)
             return self.updateRepo(update_repo=False)
-            #self.updateRepo(update_repo=False)
+            # self.updateRepo(update_repo=False)
 
         if len(missing_packages):
-            QMessageBox.warning(self, self.title, _("There are missing packages: {}. Removing.".format(", ".join(missing_packages))))
+            QMessageBox.warning(self, self.title, _("There are missing \
+            packages: {}. Removing.".format(", ".join(missing_packages))))
             for package in missing_packages:
                 if package in self.project.selected_packages:
                     self.project.selected_packages.remove(package)
-                    self.project.selected_install_image_packages.remove(package)
+                    self.project.selected_install_image_packages.remove(
+                        package)
             return self.updateRepo(update_repo=False)
 
         self.progress.finished()

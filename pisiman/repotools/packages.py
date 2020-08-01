@@ -18,13 +18,14 @@ import requests
 import piksemel
 import random
 import string
-import random
+
 
 from utility import xterm_title
 
+
 class Console:
     def started(self, title):
-        print title
+        print(title)
 
     def progress(self, msg, percent):
         sys.stdout.write("\r%-70.70s" % msg)
@@ -37,58 +38,62 @@ class Console:
 class ExPisiIndex(Exception):
     pass
 
+
 class ExIndexBogus(ExPisiIndex):
     pass
 
+
 class ExPackageMissing(ExPisiIndex):
     pass
+
 
 class ExPackageCycle(ExPisiIndex):
     pass
 
 
-#def fetch_uri(base_uri, cache_dir, filename, console=None, update_repo=False):
-    ## Dont cache for local repos
-    #print(base_uri, filename)
-    #if base_uri.startswith("file://") and not filename.startswith("pisi-index.xml"):
-        #return os.path.join(base_uri[7:], filename)
-
-    ## Check that local file isnt older or has missing parts
-    #path = os.path.join(cache_dir, filename)
-    #if not os.path.exists(path) or (update_repo and filename.startswith("pisi-index.xml")):
-        #if console:
-            #console.started("Fetching '%s'..." % filename)
-        #try:
-            #connection = urllib2.urlopen(os.path.join(base_uri, filename))
-        #except ValueError:
-            #raise ExIndexBogus
-        #filedir = path[:path.rfind("/")]
-        #os.system("mkdir -p %s" % filedir)
-        #output = file(path, "w")
-        #total_size = int(connection.info()['Content-Length'])
-        #size = 0
-        #while size < total_size:
-            #data = connection.read(4096)
-            #output.write(data)
-            #size += len(data)
-            #if console:
-                #console.progress("Downloaded %d of %d bytes" % (size, total_size), 100 * size / total_size)
-        #output.close()
-        #connection.close()
-        #if console:
-            #console.finished()
-    #return path
+# def fetch_uri(base_uri, cache_dir, filename, console=None, update_repo=False):
+#     # Dont cache for local repos
+#     if base_uri.startswith("file://") and not filename.startswith("pisi-index.xml"):
+#         return os.path.join(base_uri[7:], filename)
+#
+#     # Check that local file isnt older or has missing parts
+#     path = os.path.join(cache_dir, filename)
+#     if not os.path.exists(path) or (update_repo and filename.startswith("pisi-index.xml")):
+#         if console:
+#             console.started("Fetching '%s'..." % filename)
+#         try:
+#             connection = urllib2.urlopen(os.path.join(base_uri, filename))
+#         except ValueError:
+#             raise ExIndexBogus
+#         filedir = path[:path.rfind("/")]
+#         os.system("mkdir -p %s" % filedir)
+#         output = file(path, "w")
+#         total_size = int(connection.info()['Content-Length'])
+#         size = 0
+#         while size < total_size:
+#             data = connection.read(4096)
+#             output.write(data)
+#             size += len(data)
+#             if console:
+#                 console.progress("Downloaded %d of %d bytes" % (size, total_size), 100 * size / total_size)
+#         output.close()
+#         connection.close()
+#         if console:
+#             console.finished()
+#     return path
 
 # TODO: indirme kısmı incelenecek
 def fetch_uri(base_uri, cache_dir, filename, console=None, update_repo=False):
     # Dont cache for local repos
-    if base_uri.startswith("file://") and not filename.startswith("pisi-index.xml"):
+    if base_uri.startswith("file://") and \
+            not filename.startswith("pisi-index.xml"):
         return os.path.join(base_uri[7:], filename)
-    #print(base_uri, filename)
+    # print(base_uri, filename)
     # Check that local file isnt older or has missing parts
     path = os.path.join(cache_dir, filename)
-    #size = 0
-    if not os.path.exists(path) or (update_repo and filename.startswith("pisi-index.xml")):
+    # size = 0
+    if not os.path.exists(path) or \
+            (update_repo and filename.startswith("pisi-index.xml")):
         if console:
             console.started("Fetching '%s'..." % filename)
         if base_uri.startswith("file://"):
@@ -104,10 +109,10 @@ def fetch_uri(base_uri, cache_dir, filename, console=None, update_repo=False):
                 size = int(head.headers["Content-Length"])
             except ValueError:
                 raise ExIndexBogus
-        
+
         filedir = path[:path.rfind("/")]
         os.system("mkdir -p %s" % filedir)
-        
+
         if base_uri.startswith("file://"):
             output = open(path, "w")
             total_size = int(connection.info()['Content-Length'])
@@ -117,7 +122,8 @@ def fetch_uri(base_uri, cache_dir, filename, console=None, update_repo=False):
                 output.write(data)
                 size += len(data)
                 if console:
-                    console.progress("Downloaded %d of %d bytes" % (size, total_size), 100 * size / total_size)
+                    console.progress("Downloaded %d of %d bytes\
+                    " % (size, total_size), 100 * size / total_size)
             output.close()
         else:
             written = 0
@@ -126,23 +132,29 @@ def fetch_uri(base_uri, cache_dir, filename, console=None, update_repo=False):
                     fd.write(chunk)
                     written += len(chunk)
                     if console:
-                        console.progress("Downloaded %d of %d bytes" % (written, size), 100 * written / size)
+                        console.progress("Downloaded %d of %d bytes\
+                        " % (written, size), 100 * written / size)
         connection.close()
         if console:
             console.finished()
     return path
 
+
 def random_id():
-     """ Create an id of random length between 8 and 16
-             characters long, made up of numbers and letters.
-     """
-     return "".join(random.choice(string.ascii_letters + string.digits) for x in range(random.randint(8, 16)))
+    """ Create an id of random length between 8 and 16
+    characters long, made up of numbers and letters.
+    """
+    return "".join(random.choice(
+        string.ascii_letters + string.digits) for x in range(
+        random.randint(8, 16)))
+
 
 class PackageCollection(object):
 
     _id = ""
 
-    def __init__(self, id=None, icon=None, translations={}, packages=None, default=""):
+    def __init__(self, id=None, icon=None, translations={}, packages=None,
+                 default=""):
         if id:
             self._id = id
         else:
@@ -150,7 +162,7 @@ class PackageCollection(object):
         self.icon = icon
         self.translations = translations
         self.packages = packages
-        self.default =  default
+        self.default = default
 
     def __eq__(self, collection):
         return self._id == collection._id and \
@@ -166,8 +178,10 @@ translations: %s
 default: %s
 """ % (self._id, self.icon, self.translations, self.default)
 
+
 class PackageSet(object):
-    def __init__(self, repoURI, selectedComponents=[], selectedPackages=[], allPackages=[]):
+    def __init__(self, repoURI, selectedComponents=[], selectedPackages=[],
+                 allPackages=[]):
         self.repoURI = repoURI
         self.selectedComponents = selectedComponents
         self.selectedPackages = selectedPackages
@@ -184,8 +198,10 @@ class PackageSet(object):
 selected components: %s
 selected packages: %s
 all packages: %s
-""" % (self.repoURI, self.selectedComponents,
-                        self.selectedPackages, self.allPackages)
+""" % (
+            self.repoURI, self.selectedComponents, self.selectedPackages,
+            self.allPackages)
+
 
 class Package:
     def __init__(self, node):
@@ -195,8 +211,10 @@ class Package:
         if not self.icon:
             self.icon = 'package'
         self.homepage = node.getTag('Source').getTagData('Homepage')
-        self.version = node.getTag('History').getTag('Update').getTagData('Version')
-        self.release = node.getTag('History').getTag('Update').getAttribute('release')
+        self.version = node.getTag('History').getTag('Update').getTagData(
+            'Version')
+        self.release = node.getTag('History').getTag('Update').getAttribute(
+            'release')
         self.build = node.getTagData('Build')
         self.size = int(node.getTagData('PackageSize'))
         self.inst_size = int(node.getTagData('InstalledSize'))
@@ -206,14 +224,17 @@ class Package:
         self.summary = ""
         self.description = ""
         for tag in node.tags():
-            if tag.name() == "Summary" and tag.getAttribute("xml:lang") == "en":
+            if tag.name() == "Summary" and \
+                    tag.getAttribute("xml:lang") == "en":
                 self.summary = tag.firstChild().data()
         for tag in node.tags():
-            if tag.name() == "Description" and tag.getAttribute("xml:lang") == "en":
+            if tag.name() == "Description" and \
+                    tag.getAttribute("xml:lang") == "en":
                 self.description = tag.firstChild().data()
         deps = node.getTag('RuntimeDependencies')
         if deps:
-            self.depends = map(lambda x: x.firstChild().data(), deps.tags('Dependency'))
+            self.depends = map(
+                lambda x: x.firstChild().data(), deps.tags('Dependency'))
             for anyDeps in deps.tags("AnyDependency"):
                 self.depends.append(anyDeps.getTagData("Dependency"))
         else:
@@ -260,7 +281,8 @@ class Repository:
         self.components = {}
 
     def parse_index(self, console=None, update_repo=False):
-        path = fetch_uri(self.base_uri, self.cache_dir, self.index_name, console, update_repo)
+        path = fetch_uri(self.base_uri, self.cache_dir,
+                         self.index_name, console, update_repo)
         if path.endswith(".bz2"):
             import bz2
             data = open(path).read()
@@ -270,7 +292,8 @@ class Repository:
             try:
                 import lzma
             except ImportError:
-                print "Install python-pyliblzma package, or try a different index format."
+                print("Install python-pyliblzma package, or \
+                try a different index format.")
                 return
 
             data = open(path).read()
@@ -288,10 +311,12 @@ class Repository:
         for name in self.packages:
             p = self.packages[name]
             for name2 in p.depends:
-                if self.packages.has_key(name2):
+                # if self.packages.has_key(name2):
+                if name2 in self.packages:
                     self.packages[name2].revdeps.append(p.name)
                 else:
-                    raise ExPackageMissing, (p.name, name2)
+                    # DİKKAT: burada hata olabilir
+                    raise ExPackageMissing(p.name, name2)
             if p.component in self.components:
                 self.components[p.component].append(p.name)
             else:
@@ -304,14 +329,16 @@ class Repository:
                 dep_graph.add_edge(name, dep)
         try:
             dep_graph.dfs()
-        except CycleException, c:
-            raise ExPackageCycle, (c.cycle)
+        except CycleException as c:
+            raise ExPackageCycle(c.cycle)
 
     def make_index(self, package_list):
         doc = piksemel.newDocument("PISI")
 
-        # since new PiSi (pisi 2) needs component info in index file, we need to copy it from original index that user specified
-        indexpath = fetch_uri(self.base_uri, self.cache_dir, self.index_name, None, False)
+        # since new PiSi (pisi 2) needs component info in index file,
+        # we need to copy it from original index that user specified
+        indexpath = fetch_uri(self.base_uri, self.cache_dir,
+                              self.index_name, None, False)
         if indexpath.endswith(".bz2"):
             import bz2
             data = open(indexpath).read()
@@ -321,7 +348,8 @@ class Repository:
             try:
                 import lzma
             except ImportError:
-                print "Install python-pyliblzma package, or try a different index format."
+                print("Install python-pyliblzma package, \
+                or try a different index format.")
                 return
 
             data = open(indexpath).read()
@@ -359,10 +387,10 @@ class Repository:
         import bz2
         data = bz2.compress(index)
         import hashlib
-        f = file(os.path.join(path, "%s-index.xml.bz2") % index_name, "w")
+        f = open(os.path.join(path, "%s-index.xml.bz2") % index_name, "w")
         f.write(data)
         f.close()
-        f = file(os.path.join(path, "%s-index.xml.bz2.sha1sum") % index_name, "w")
+        f = open(os.path.join(path, "%s-index.xml.bz2.sha1sum") % index_name, "w")
         s = hashlib.sha1()
         s.update(data)
         f.write(s.hexdigest())
@@ -384,12 +412,12 @@ class Repository:
                 translationTag.insertTag("title").insertData(translation[0])
                 translationTag.insertTag("description").insertData(translation[1])
 
-        f = file(os.path.join(path, "collection.xml"), "w")
+        f = open(os.path.join(path, "collection.xml"), "w")
         f.write(doc.toPrettyString())
         f.close()
 
         import hashlib
-        f = file(os.path.join(path, "collection.xml.sha1sum"), "w")
+        f = open(os.path.join(path, "collection.xml.sha1sum"), "w")
         s = hashlib.sha1()
         s.update(doc.toPrettyString())
         f.write(s.hexdigest())
@@ -402,17 +430,18 @@ class Repository:
         def collect(name):
             p = self.packages[name]
             for item in p.depends:
-                if not item in deps:
+                if item not in deps:
                     deps.add(item)
                     collect(item)
 
         collect(package_name)
         # FIXME: Don't hardcode installer name
-        if package_name =="yali":
+        if package_name == "yali":
             # Not needed deps search for system.base as default at all click!!!
-            if self.components.has_key("system.base"):
+            # if self.components.has_key("system.base"):
+            if "system.base" in self.components:
                 for item in self.components["system.base"]:
-                    if not item in deps:
+                    if item not in deps:
                         deps.add(item)
                         collect(item)
         return deps

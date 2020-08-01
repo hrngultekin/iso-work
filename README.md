@@ -14,7 +14,3 @@ Requirements
  - python-qt5-devel
  - make
  - python-pathlib2
- - python-requests
-
-Requirements kısımdaki programların sisteminizde kurulu olması gerekmektedir. <br>
-Çalıştırmadan önce pisiman/not dosyasını okuyun.

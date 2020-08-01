@@ -48,7 +48,6 @@ usr/share/man/
 usr/share/groff/
 usr/share/dict/
 var/db/pisi/
-var/cache/pisi/packages/
 var/cache/pisi/archives/
 var/tmp/pisi/
 var/pisi/
@@ -57,6 +56,7 @@ var/log/comar.log
 var/log/pisi.log
 root/.bash_history
 """ % ((PYTHON_VER,)*5)
+# var/cache/pisi/packages/
 
 default_install_exclude_list = """
 lib/rcscripts/
@@ -102,69 +102,72 @@ root/.bash_history
 """ % ((PYTHON_VER,)*16)
 
 default_install_glob_excludes = (
-    ( "usr/lib/python%s/" % PYTHON_VER, "*.pyc" ),
-    ( "usr/lib/python%s/" % PYTHON_VER, "*.pyo" ),
-    ( "usr/lib/pardus/", "*.pyc" ),
-    ( "usr/lib/pardus/", "*.pyo" ),
-    ( "usr/lib/", "*.a" ),
-    ( "usr/lib/", "*.la" ),
-    ( "lib/", "*.a" ),
-    ( "lib/", "*.la" ),
-    ( "var/db/comar/", "__db*" ),
-    ( "var/db/comar/", "log.*" ),
-    ( "%s/lib/" % QT_PREFIX, "libphononexperimental.so*" ),
-    ( "%s/lib/" % QT_PREFIX, "libphonon.so*" ),
-    ( "%s/lib/" % QT_PREFIX, "libqca.so*" ),
-    ( "%s/lib/" % QT_PREFIX, "libQt3Support.so*" ),
-    ( "%s/lib/" % QT_PREFIX, "libQtAssistantClient.so*" ),
-    ( "%s/lib/" % QT_PREFIX, "libQtCLucene.so*" ),
-    ( "%s/lib/" % QT_PREFIX, "libQtDBus.so*" ),
-    ( "%s/lib/" % QT_PREFIX, "libQtDesignerComponents.so*" ),
-    ( "%s/lib/" % QT_PREFIX, "libQtDesigner.so*" ),
-    ( "%s/lib/" % QT_PREFIX, "libQtHelp.so*" ),
-    ( "%s/lib/" % QT_PREFIX, "libQtMultimedia*" ),
-    ( "%s/lib/" % QT_PREFIX, "libQtNetwork.so*" ),
-    ( "%s/lib/" % QT_PREFIX, "libQtOpenGL.so*" ),
-    ( "%s/lib/" % QT_PREFIX, "libQtScript.so*" ),
-    ( "%s/lib/" % QT_PREFIX, "libQtScriptTools.so*" ),
-    ( "%s/lib/" % QT_PREFIX, "libQtSql.so*" ),
-    ( "%s/lib/" % QT_PREFIX, "libQtTapioca.so*" ),
-    ( "%s/lib/" % QT_PREFIX, "libQtTelepathyClient.so*" ),
-    ( "%s/lib/" % QT_PREFIX, "libQtTest.so*" ),
-    ( "%s/lib/" % QT_PREFIX, "libQtUiTools.so*" ),
-    ( "%s/lib/" % QT_PREFIX, "libQtWebKit.so*" ),
-    ( "%s/lib/" % QT_PREFIX, "libQtXmlPatterns.so*" ),
-    ( "%s/lib/" % QT_PREFIX, "libQtXml.so*" ),
+    ("usr/lib/python%s/" % PYTHON_VER, "*.pyc"),
+    ("usr/lib/python%s/" % PYTHON_VER, "*.pyo"),
+    ("usr/lib/pardus/", "*.pyc"),
+    ("usr/lib/pardus/", "*.pyo"),
+    ("usr/lib/", "*.a"),
+    ("usr/lib/", "*.la"),
+    ("lib/", "*.a"),
+    ("lib/", "*.la"),
+    ("var/db/comar/", "__db*"),
+    ("var/db/comar/", "log.*"),
+    ("%s/lib/" % QT_PREFIX, "libphononexperimental.so*"),
+    ("%s/lib/" % QT_PREFIX, "libphonon.so*"),
+    ("%s/lib/" % QT_PREFIX, "libqca.so*"),
+    ("%s/lib/" % QT_PREFIX, "libQt3Support.so*"),
+    ("%s/lib/" % QT_PREFIX, "libQtAssistantClient.so*"),
+    ("%s/lib/" % QT_PREFIX, "libQtCLucene.so*"),
+    ("%s/lib/" % QT_PREFIX, "libQtDBus.so*"),
+    ("%s/lib/" % QT_PREFIX, "libQtDesignerComponents.so*"),
+    ("%s/lib/" % QT_PREFIX, "libQtDesigner.so*"),
+    ("%s/lib/" % QT_PREFIX, "libQtHelp.so*"),
+    ("%s/lib/" % QT_PREFIX, "libQtMultimedia*"),
+    ("%s/lib/" % QT_PREFIX, "libQtNetwork.so*"),
+    ("%s/lib/" % QT_PREFIX, "libQtOpenGL.so*"),
+    ("%s/lib/" % QT_PREFIX, "libQtScript.so*"),
+    ("%s/lib/" % QT_PREFIX, "libQtScriptTools.so*"),
+    ("%s/lib/" % QT_PREFIX, "libQtSql.so*"),
+    ("%s/lib/" % QT_PREFIX, "libQtTapioca.so*"),
+    ("%s/lib/" % QT_PREFIX, "libQtTelepathyClient.so*"),
+    ("%s/lib/" % QT_PREFIX, "libQtTest.so*"),
+    ("%s/lib/" % QT_PREFIX, "libQtUiTools.so*"),
+    ("%s/lib/" % QT_PREFIX, "libQtWebKit.so*"),
+    ("%s/lib/" % QT_PREFIX, "libQtXmlPatterns.so*"),
+    ("%s/lib/" % QT_PREFIX, "libQtXml.so*"),
 )
 
 default_live_glob_excludes = (
-    ( "usr/lib/python%s/" % PYTHON_VER, "*.pyc" ),
-    ( "usr/lib/python%s/" % PYTHON_VER, "*.pyo" ),
-    ( "usr/lib/pardus/", "*.pyc" ),
-    ( "usr/lib/pardus/", "*.pyo" ),
-    ( "usr/lib/", "*.a" ),
-    ( "usr/lib/", "*.la" ),
-    ( "lib/", "*.a" ),
-    ( "lib/", "*.la" ),
-    ( "var/db/comar/", "__db*" ),
-    ( "var/db/comar/", "log.*" ),
-    ( "var/lib/pisi/index", "*" ),
-    ( "var/lib/pisi/info", "*" ),
-    ( "var/lib/pisi/package", "*" ),
-    ( "var/cache/pisi", "*.cache" ),
+    ("usr/lib/python%s/" % PYTHON_VER, "*.pyc"),
+    ("usr/lib/python%s/" % PYTHON_VER, "*.pyo"),
+    ("usr/lib/pardus/", "*.pyc"),
+    ("usr/lib/pardus/", "*.pyo"),
+    ("usr/lib/", "*.a"),
+    ("usr/lib/", "*.la"),
+    ("lib/", "*.a"),
+    ("lib/", "*.la"),
+    ("var/db/comar/", "__db*"),
+    ("var/db/comar/", "log.*"),
+    # ("var/lib/pisi/index/", "*"),
+    # ("var/lib/pisi/info", "*"),
+    # ("var/lib/pisi/package", "*"),
+    # ("var/cache/pisi", "*.cache"),
 )
 
 
 class ExProject(Exception):
     pass
 
+
 class ExProjectMissing(Exception):
     pass
+
 
 class ExProjectBogus(Exception):
     pass
 
 # Project class
+
 
 class Project:
     def __init__(self):
@@ -176,6 +179,7 @@ class Project:
         self.work_dir = ""
         self.release_files = ""
         self.repo_uri = ""
+        self.live_repo_uri = ""
         self.type = "install"
         self.squashfs_comp_type = "xz"
         self.extra_params = ""
@@ -234,6 +238,10 @@ class Project:
         self.work_dir = doc.getTagData("WorkDir")
         if not self.work_dir:
             self.work_dir = ""
+        self.live_repo_uri = doc.getTagData("LiveRepo")
+        if not self.live_repo_uri:
+            self.live_repo_uri = ""
+
 
         def __packageSelection(node):
             # Fill in the packages
@@ -353,6 +361,8 @@ class Project:
             doc.insertTag("PluginPackage").insertData(self.plugin_package)
         if self.extra_params:
             doc.insertTag("ExtraParameters").insertData(self.extra_params)
+        if self.live_repo_uri:
+            doc.insertTag("LiveRepo").insertData(self.live_repo_uri)
 
         if self.package_collections:
             collections = doc.insertTag("PackageCollections")
@@ -559,7 +569,7 @@ class Project:
         return self._get_dir("install_repo", clean)
 
     def efi_tmp_path_dir(self, clean=False):
-        return self._get_dir("efi_tmp", clean) 
+        return self._get_dir("efi_tmp", clean)
 
     def iso_dir(self, clean=False):
         return self._get_dir("iso", clean)
