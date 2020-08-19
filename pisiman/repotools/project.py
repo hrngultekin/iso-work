@@ -33,20 +33,33 @@ QT_PREFIX = "usr"
 if os.path.exists("/usr/lib/qt5/libQtCore.so"):
     QT_PREFIX += "/lib/qt5"
 
+# paketlerde kırılmalara sebep olmaması için değiştirildi
+# default_live_exclude_list = """
+# lib/rcscripts/
+# usr/lib/python%s/lib-tk/
+# usr/lib/python%s/idlelib/
+# usr/lib/python%s/bsddb/test/
+# usr/lib/python%s/lib-old/
+# usr/lib/python%s/test/
+# usr/lib/klibc/include/
+# usr/share/aclocal/
+# usr/share/info/
+# usr/share/sip/
+# usr/share/man/
+# usr/share/groff/
+# usr/share/dict/
+# var/db/pisi/
+# var/cache/pisi/archives/
+# var/tmp/pisi/
+# var/pisi/
+# tmp/pisi-root/
+# var/log/comar.log
+# var/log/pisi.log
+# root/.bash_history
+# """ % ((PYTHON_VER,)*5)
+# var/cache/pisi/packages/
+
 default_live_exclude_list = """
-lib/rcscripts/
-usr/lib/python%s/lib-tk/
-usr/lib/python%s/idlelib/
-usr/lib/python%s/bsddb/test/
-usr/lib/python%s/lib-old/
-usr/lib/python%s/test/
-usr/lib/klibc/include/
-usr/share/aclocal/
-usr/share/info/
-usr/share/sip/
-usr/share/man/
-usr/share/groff/
-usr/share/dict/
 var/db/pisi/
 var/cache/pisi/archives/
 var/tmp/pisi/
@@ -55,8 +68,7 @@ tmp/pisi-root/
 var/log/comar.log
 var/log/pisi.log
 root/.bash_history
-""" % ((PYTHON_VER,)*5)
-# var/cache/pisi/packages/
+"""
 
 default_install_exclude_list = """
 lib/rcscripts/
@@ -138,14 +150,14 @@ default_install_glob_excludes = (
 )
 
 default_live_glob_excludes = (
-    ("usr/lib/python%s/" % PYTHON_VER, "*.pyc"),
-    ("usr/lib/python%s/" % PYTHON_VER, "*.pyo"),
-    ("usr/lib/pardus/", "*.pyc"),
-    ("usr/lib/pardus/", "*.pyo"),
-    ("usr/lib/", "*.a"),
-    ("usr/lib/", "*.la"),
-    ("lib/", "*.a"),
-    ("lib/", "*.la"),
+    # ("usr/lib/python%s/" % PYTHON_VER, "*.pyc"),
+    # ("usr/lib/python%s/" % PYTHON_VER, "*.pyo"),
+    # ("usr/lib/pardus/", "*.pyc"),
+    # ("usr/lib/pardus/", "*.pyo"),
+    # ("usr/lib/", "*.a"),
+    # ("usr/lib/", "*.la"),
+    # ("lib/", "*.a"),
+    # ("lib/", "*.la"),
     ("var/db/comar/", "__db*"),
     ("var/db/comar/", "log.*"),
     # ("var/lib/pisi/index/", "*"),
