@@ -341,12 +341,18 @@
       <string>Commands</string>
      </property>
      <addaction name="actionMake_Repo"/>
-     <addaction name="actionCheck_Repo"/>
      <addaction name="separator"/>
      <addaction name="actionMake_Live"/>
      <addaction name="actionPack_Live"/>
      <addaction name="separator"/>
      <addaction name="actionMake_Iso"/>
+    </widget>
+    <widget class="QMenu" name="menuMissing_Packages">
+     <property name="title">
+      <string>Missing Packages</string>
+     </property>
+     <addaction name="actionCheck_Repo"/>
+     <addaction name="actionDownloadMissingPackages"/>
     </widget>
     <addaction name="actionUpdateRepo"/>
     <addaction name="separator"/>
@@ -356,7 +362,7 @@
     <addaction name="separator"/>
     <addaction name="actionMakeImage"/>
     <addaction name="menuCommands"/>
-    <addaction name="actionDownloadMissingPackages"/>
+    <addaction name="menuMissing_Packages"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuProject"/>
@@ -488,9 +494,14 @@
     <string>Ctrl+Shift+C</string>
    </property>
   </action>
+  <action name="actionCheck">
+   <property name="text">
+    <string>Check</string>
+   </property>
+  </action>
   <action name="actionDownloadMissingPackages">
    <property name="text">
-    <string>Missing Packages</string>
+    <string>Download Missing Packages</string>
    </property>
   </action>
  </widget>

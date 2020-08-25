@@ -3,7 +3,7 @@ Pisiman - Pisi ISO Creator
 
 Requirements
 ------------
- - cdrkit
+ - xorriso
  - syslinux
  - squashfs-tools
  - pyqtermwidget (Required for GUI)

@@ -52,7 +52,7 @@ _ = lambda x: gettext.ldgettext("pardusman", x)
 
 
 def get_finished_status(project):
-    status = ("make-repo", "check-repo", "make-live", "pack-live", "make-iso")
+    status = ("make-repo", "make-live", "pack-live", "make-iso")
     if not os.path.exists(os.path.join(project.work_dir, "finished.txt")):
         return -1
 
@@ -427,10 +427,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         state = get_finished_status(self.project)
         # print(state)
 
-        self.actionCheck_Repo.setEnabled(state >= 0)
-        self.actionMake_Live.setEnabled(state >= 1)
-        self.actionPack_Live.setEnabled(state >= 2)
-        self.actionMake_Iso.setEnabled(state >= 3)
+        # self.actionCheck_Repo.setEnabled(state >= 0)
+        self.actionMake_Live.setEnabled(state >= 0)
+        self.actionPack_Live.setEnabled(state >= 1)
+        self.actionMake_Iso.setEnabled(state >= 2)
 
     def slotMakeImage(self):
         """
@@ -666,34 +666,64 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 # FIXME: her paket tek tek kontrol ediliyor daha iyi bir fonksiyon yazılmalı
     def slotDownloadMissingPackages(self):
-        while True:
-            # Progress dialog
-            self.progress = Progress(self)
-            # Update project
-            self.updateProject()
-            # Get repository
-            try:
-                self.repo = self.project.get_repo(
-                    self.progress, update_repo=True)
-            except ExPackageMissing as e:
-                self.progress.finished()
+        try:
+            curdir = os.getcwd()
 
-                curdir = os.getcwd()
-
-                repo_path = os.path.dirname(self.project.repo_uri)
-                if repo_path.startswith("file:///"):
-                    repo_path = repo_path[7:]
-                print(_("Package index has errors. \
-                    '%s' depends on non-existing '%s'.") % e.args)
-                os.chdir(repo_path)
-                os.system("pisi fc {} --runtime-deps".format(
-                    " ".join(e.args[1:])))
-                os.system("pisi ix --skip-signing")
-
+            repo = self.project.get_repo()
+            repo_path = repo.cache_dir
+            if repo_path.startswith("file:///"):
+                repo_path = repo_path[7:]
+            # print(_("Package index has errors. \
+            #     '%s' depends on non-existing '%s'.") % e.args)
+            os.chdir(repo_path)
+            if not os.path.exists("../missing.txt"):
                 os.chdir(curdir)
-            else:
-                self.progress.finished()
-                break
+                QMessageBox.warning(self, self.title, _("Check repo before download.\nIf the repo is checked, there are no lost packages."))
+                # print("check repo before download")
+                return
+
+            missing_packages = ""
+            with open("../missing.txt") as file_:
+                missing_packages = file_.read()
+
+            missing_packages = missing_packages.split("\n")
+            print(missing_packages)
+            os.system("pisi fc {} --runtime-deps".format(
+                " ".join(missing_packages)))
+            os.system("pisi ix --skip-signing")
+
+            os.system("rm -f ../missing.txt")
+            os.chdir(curdir)
+        except Exception as e:
+            print("missing packages could not be downloaded")
+            print(e)
+            # Progress dialog
+            # self.progress = Progress(self)
+            # # Update project
+            # self.updateProject()
+            # # Get repository
+            # try:
+            #     self.repo = self.project.get_repo(
+            #         self.progress, update_repo=True)
+            # except ExPackageMissing as e:
+            #     self.progress.finished()
+            #
+            #     curdir = os.getcwd()
+            #
+            #     repo_path = os.path.dirname(self.project.repo_uri)
+            #     if repo_path.startswith("file:///"):
+            #         repo_path = repo_path[7:]
+            #     print(_("Package index has errors. \
+            #         '%s' depends on non-existing '%s'.") % e.args)
+            #     os.chdir(repo_path)
+            #     os.system("pisi fc {} --runtime-deps".format(
+            #         " ".join(e.args[1:])))
+            #     os.system("pisi ix --skip-signing")
+            #
+            #     os.chdir(curdir)
+            # else:
+            #     self.progress.finished()
+            #     break
 
     def updateRepo(self, update_repo=True):
         """

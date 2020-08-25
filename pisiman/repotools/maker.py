@@ -506,26 +506,30 @@ def squash_image(project):
                     "{}/usr/share/applications/".format(image_dir))
         # shutil.copy("./data/yali/yali.desktop",
         #             "{}/home/pisi/.config/autostart/".format(image_dir))
-        # shutil.copy("./data/yali/org.pisilinux.yali.policy",
-        #             "{}/usr/share/polkit-1/actions/".format(image_dir))
+        shutil.copy("./data/yali/org.pisilinux.yali.policy",
+                    "{}/usr/share/polkit-1/actions/".format(image_dir))
         shutil.copy("./data/yali/yali-rescue.desktop",
                     "{}/usr/share/applications/".format(image_dir))
 
-        # kde yapılandırması ================================================
         repo = project.get_repo()
-        if 'plasma-workspace' in repo.packages:
-            os.system("cp -rf ./data/home/.config {}/home/pisi".format(image_dir))
-            os.system("cp -rf ./data/home/.local {}/home/pisi".format(image_dir))
+        # kurulumda sorun olmaması için değişiklik yapılan paketler tekrar
+        # yüklenecek
+        print("baselayout package copy to image_dir")
+        baselayout_uri = repo.packages["baselayout"].uri
+        if not os.path.exists("%s/var/cache/pisi/packages" % repo.cache_dir):
+            os.makedirs("%s/var/cache/pisi/packages" % repo.cache_dir)
+            os.system("cp -rf %s/%s %s/var/cache/pisi/packages/" % (repo.cache_dir, baselayout_uri, image_dir))
+            os.system("cp -rf %s/%s %s/var/cache/pisi/packages/" % (repo.cache_dir, repo.packages['kernel'].uri, image_dir))
+
+        # kde yapılandırması ================================================
+        if 'plasma-workspace' in project.all_install_image_packages:
+            os.system("cp -rf ./data/kde_config/.config {}/home/pisi".format(image_dir))
+            os.system("cp -rf ./data/kde_config/.local {}/home/pisi".format(image_dir))
             chrun("chown -R pisi:wheel /home/pisi/.config")
             chrun("chown -R pisi:wheel /home/pisi/.local")
 
-            print("baselayout package copy to image_dir")
-            baselayout_uri = repo.packages["baselayout"].uri
-            if not os.path.exists("%s/var/cache/pisi/packages" % repo.cache_dir):
-                os.makedirs("%s/var/cache/pisi/packages" % repo.cache_dir)
-            os.system("cp -rf %s/%s %s/var/cache/pisi/packages/" % (repo.cache_dir, baselayout_uri, image_dir))
-            os.system("cp -rf %s/%s %s/var/cache/pisi/packages/" % (repo.cache_dir, repo.packages['kernel'].uri, image_dir))
             os.system("cp -rf %s/%s %s/var/cache/pisi/packages/" % (repo.cache_dir, repo.packages['sddm'].uri, image_dir))
+
 
         # kde yapılandırması ================================================
 
@@ -716,8 +720,8 @@ def check_repo_files(project):
             sys.exit(1)
 
         finished_path = os.path.join(project.work_dir, "finished.txt")
-        with open(finished_path, 'w') as _file:
-            _file.write("check-repo")
+        # with open(finished_path, 'w') as _file:
+        #     _file.write("check-repo")
     except KeyboardInterrupt:
         print("Keyboard Interrupt: check_repo() cancelled.")
         sys.exit(1)
