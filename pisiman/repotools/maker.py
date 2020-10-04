@@ -518,8 +518,9 @@ def squash_image(project):
         baselayout_uri = repo.packages["baselayout"].uri
         if not os.path.exists("%s/var/cache/pisi/packages" % repo.cache_dir):
             os.makedirs("%s/var/cache/pisi/packages" % repo.cache_dir)
-            os.system("cp -rf %s/%s %s/var/cache/pisi/packages/" % (repo.cache_dir, baselayout_uri, image_dir))
-            os.system("cp -rf %s/%s %s/var/cache/pisi/packages/" % (repo.cache_dir, repo.packages['kernel'].uri, image_dir))
+
+        os.system("cp -rf %s/%s %s/var/cache/pisi/packages/" % (repo.cache_dir, baselayout_uri, image_dir))
+        os.system("cp -rf %s/%s %s/var/cache/pisi/packages/" % (repo.cache_dir, repo.packages['kernel'].uri, image_dir))
 
         # kde yapılandırması ================================================
         if 'plasma-workspace' in project.all_install_image_packages:
@@ -719,7 +720,7 @@ def check_repo_files(project):
             print("Some packages has wrong hash")
             sys.exit(1)
 
-        finished_path = os.path.join(project.work_dir, "finished.txt")
+        # finished_path = os.path.join(project.work_dir, "finished.txt")
         # with open(finished_path, 'w') as _file:
         #     _file.write("check-repo")
     except KeyboardInterrupt:
@@ -794,12 +795,35 @@ def make_image(project):
         chroot_comar(image_dir)
         chrun("/usr/bin/pisi configure-pending baselayout")
 
-        chrun("/usr/bin/pisi configure-pending -dv")
+        # WARNING: anlık olarakçıktı vermesini sağla
+        def chrun2(cmd, shell=True, env=os.environ.copy()):
+            proc = subprocess.Popen(
+                'chroot "{}" {}'.format(image_dir, cmd),
+                shell=shell, env=env,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE)
+            for line in iter(proc.stdout.readline, b''):
+                try:
+                    print(line[:-1])
+                except Exception as e:
+                    print(e)
+            print(proc.stderr.read())
+            proc.poll()
+            return proc.returncode
+            # return run_batch('chroot "%s" %s' % (image_dir, cmd))
+
+        ret = chrun2("/usr/bin/pisi configure-pending -dv")
+        print(ret)
+        print("="*80)
+        if ret != 0:
+            chrun2("service dbus restart")
+            chrun2("/usr/bin/pisi configure-pending -dv")
 
         # Disable Nepomuk in live CDs
         if project.type == "live":
             try:
-                os.unlink("%s/usr/share/autostart/nepomukserver.desktop" % image_dir)
+                os.unlink(
+                    "%s/usr/share/autostart/nepomukserver.desktop" % image_dir)
             except OSError:
                 pass
 

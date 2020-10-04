@@ -37,6 +37,19 @@ _mnt_aufs() {
     /bin/mount -t aufs -o remount,append:"${src}"=ro none "${mnt}"
 }
 
+_mnt_overlayfs() {
+    local src="${1}"
+    local newroot="${2}"
+    local mnt="${3}"
+    local work_dir="/run/miso/overlay_root/work"
+    local upper_dir="/run/miso/overlay_root/upper"
+
+    mkdir -p "${upper_dir}"
+    mkdir -p "${work_dir}"
+
+    mount -t overlay overlay -o lowerdir="${src}",upperdir="${upper_dir}",workdir="${work_dir}" "${newroot}${mnt}"
+}
+
 # args: source, mountpoint
 _mnt_bind() {
     local src="${1}"
@@ -72,8 +85,12 @@ _mnt_squashfs() {
         launch_interactive_shell
     fi
 
+    # if [ "/${mnt#/*/}" = "/" ]; then
+    #     _mnt_aufs "${tmp_mnt}" "${mnt}"
     if [ "/${mnt#/*/}" = "/" ]; then
-        _mnt_aufs "${tmp_mnt}" "${mnt}"
+        local lower_dir
+        local lower_dir=${lower_dir:-}${lower_dir:+:}"${tmp_mnt}"
+        _mnt_overlayfs "${lower_dir}" "${newroot}" "/"
     else
         _mnt_bind "${tmp_mnt}" "${mnt}"
     fi
@@ -198,6 +215,7 @@ probedevice() {
 
 # Bu fonksiyonda hata var
 miso_mount_handler() {
+    msg "::: miso_mount_handler basladi."
     local newroot="${1}"
     local found
 

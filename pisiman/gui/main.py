@@ -664,7 +664,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             self.checkCollection.setChecked(False)
 
-# FIXME: her paket tek tek kontrol ediliyor daha iyi bir fonksiyon yazılmalı
+# FIXME: sürekli tekrar ediyor
     def slotDownloadMissingPackages(self):
         try:
             curdir = os.getcwd()
@@ -688,7 +688,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             missing_packages = missing_packages.split("\n")
             print(missing_packages)
-            os.system("pisi fc {} --runtime-deps".format(
+            for pack in missing_packages:
+                _path = "{}/{}"
+                if pack.startswith("lib"):
+                    _path = _path.format(pack[:4], pack)
+                else:
+                    _path = _path.format(pack[0], pack)
+
+                __file = os.listdir(_path)
+                print(_path)
+                for f in __file:
+                    os.remove(_path + "/" + f)
+
+            # os.system("pisi fc {} --runtime-deps".format(
+            os.system("pisi fc {}".format(
                 " ".join(missing_packages)))
             os.system("pisi ix --skip-signing")
 

@@ -2,7 +2,8 @@
 
 build() {
     add_module "cdrom"
-    add_module "aufs"
+    # add_module "aufs"
+    add_module "overlay"
     add_module "squashfs"
     add_module "isofs"
     add_module "loop"
@@ -28,4 +29,3 @@ build() {
 }
 
 # vim: set ft=sh ts=4 sw=4 et:
-

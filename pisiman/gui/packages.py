@@ -44,11 +44,12 @@ class PackageWidgetItem(QTreeWidgetItem):
 
     def setRequired(self, required):
         self.required = required
-        brush = QBrush()
+        brush = QBrush(QColor(255, 0, 0))
         if required:
             brush.setColor(QColor(255, 0, 0))
         else:
             brush.setColor(QColor(0, 0, 0))
+
         self.setForeground(0, brush)
 
     def isRequired(self):

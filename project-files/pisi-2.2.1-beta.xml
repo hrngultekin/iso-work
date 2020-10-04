@@ -320,6 +320,7 @@
                 <Package>bluez</Package>
                 <Package>bluez-libs</Package>
                 <Package>bluez-qt</Package>
+                <Package>boost</Package>
                 <Package>breeze-cursors</Package>
                 <Package>breeze-grub</Package>
                 <Package>breeze-gtk</Package>
@@ -344,6 +345,7 @@
                 <Package>cpio</Package>
                 <Package>cpupowertools</Package>
                 <Package>cracklib</Package>
+                <Package>crypto++</Package>
                 <Package>cryptsetup</Package>
                 <Package>crystalhd-firmware</Package>
                 <Package>cups</Package>
@@ -384,6 +386,7 @@
                 <Package>e2fsprogs</Package>
                 <Package>e2fsprogs-devel</Package>
                 <Package>ebook-tools</Package>
+                <Package>editorconfig-core-c</Package>
                 <Package>efibootmgr</Package>
                 <Package>efivar</Package>
                 <Package>elfutils</Package>
@@ -510,6 +513,7 @@
                 <Package>gtk2</Package>
                 <Package>gtk3</Package>
                 <Package>guile</Package>
+                <Package>guile2.0</Package>
                 <Package>gutenprint</Package>
                 <Package>gwenview</Package>
                 <Package>gypsy</Package>
@@ -539,7 +543,6 @@
                 <Package>jbigkit</Package>
                 <Package>json-c</Package>
                 <Package>json-glib</Package>
-                <Package>kaccounts-integration</Package>
                 <Package>kactivities</Package>
                 <Package>kactivities-stats</Package>
                 <Package>kactivitymanagerd</Package>
@@ -977,7 +980,9 @@
                 <Package>perl-Digest-SHA1</Package>
                 <Package>perl-HTML-Parser</Package>
                 <Package>perl-HTML-Tagset</Package>
+                <Package>perl-HTTP-Message</Package>
                 <Package>perl-Locale-gettext</Package>
+                <Package>perl-URI</Package>
                 <Package>piksemel</Package>
                 <Package>pinentry</Package>
                 <Package>pipewire</Package>
@@ -1148,6 +1153,7 @@
                 <Package>solid</Package>
                 <Package>sonnet</Package>
                 <Package>soundtouch</Package>
+                <Package>source-highlight</Package>
                 <Package>spectacle</Package>
                 <Package>speech-dispatcher</Package>
                 <Package>speex</Package>
@@ -1311,8 +1317,11 @@
         <SelectedComponent>multimedia.graphics.gimp.addon</SelectedComponent>
         <SelectedComponent>multimedia.graphics.gimp.l10n</SelectedComponent>
         <SelectedComponent>system.base</SelectedComponent>
+        <SelectedPackage>acpi</SelectedPackage>
+        <SelectedPackage>acpid</SelectedPackage>
         <SelectedPackage>ark</SelectedPackage>
         <SelectedPackage>artwork-pisilinux-release</SelectedPackage>
+        <SelectedPackage>aufs-util</SelectedPackage>
         <SelectedPackage>bash-completion</SelectedPackage>
         <SelectedPackage>bashdb</SelectedPackage>
         <SelectedPackage>bluedevil</SelectedPackage>
@@ -1359,16 +1368,7 @@
         <SelectedPackage>ksysguard</SelectedPackage>
         <SelectedPackage>kwin</SelectedPackage>
         <SelectedPackage>libreoffice</SelectedPackage>
-        <SelectedPackage>libreoffice-base</SelectedPackage>
-        <SelectedPackage>libreoffice-calc</SelectedPackage>
-        <SelectedPackage>libreoffice-common-dictionaries</SelectedPackage>
-        <SelectedPackage>libreoffice-draw</SelectedPackage>
         <SelectedPackage>libreoffice-en-US</SelectedPackage>
-        <SelectedPackage>libreoffice-help-en-US</SelectedPackage>
-        <SelectedPackage>libreoffice-help-tr</SelectedPackage>
-        <SelectedPackage>libreoffice-impress</SelectedPackage>
-        <SelectedPackage>libreoffice-kde5-integration</SelectedPackage>
-        <SelectedPackage>libreoffice-math</SelectedPackage>
         <SelectedPackage>libreoffice-tr</SelectedPackage>
         <SelectedPackage>libxkbcommon</SelectedPackage>
         <SelectedPackage>lvm2-static</SelectedPackage>
@@ -1498,8 +1498,6 @@
         <Package>aom</Package>
         <Package>appstream</Package>
         <Package>appstream-qt5</Package>
-        <Package>ark</Package>
-        <Package>artwork-pisilinux-release</Package>
         <Package>aspell</Package>
         <Package>at-spi2-atk</Package>
         <Package>at-spi2-core</Package>
@@ -1519,21 +1517,15 @@
         <Package>baloo-widgets</Package>
         <Package>baselayout</Package>
         <Package>bash</Package>
-        <Package>bash-completion</Package>
-        <Package>bashdb</Package>
         <Package>bc</Package>
         <Package>biosdevname</Package>
         <Package>blas</Package>
-        <Package>bluedevil</Package>
         <Package>bluez</Package>
         <Package>bluez-libs</Package>
         <Package>bluez-qt</Package>
         <Package>boost</Package>
-        <Package>breeze-cursors</Package>
-        <Package>breeze-gtk</Package>
         <Package>breeze-icons</Package>
         <Package>breeze-style</Package>
-        <Package>breeze-wallpapers</Package>
         <Package>busybox</Package>
         <Package>busybox-mkinitcpio</Package>
         <Package>bzip2</Package>
@@ -1546,7 +1538,6 @@
         <Package>cln</Package>
         <Package>clucene</Package>
         <Package>codec2</Package>
-        <Package>colord-kde</Package>
         <Package>colorize-gimp</Package>
         <Package>comar</Package>
         <Package>comar-api</Package>
@@ -1554,6 +1545,7 @@
         <Package>cpio</Package>
         <Package>cppunit</Package>
         <Package>cracklib</Package>
+        <Package>crypto++</Package>
         <Package>crystalhd-firmware</Package>
         <Package>ctags</Package>
         <Package>cups</Package>
@@ -1570,7 +1562,6 @@
         <Package>dejavu-fonts</Package>
         <Package>device-mapper</Package>
         <Package>device-mapper-event</Package>
-        <Package>device-mapper-static</Package>
         <Package>dhcpcd</Package>
         <Package>diffutils</Package>
         <Package>discount</Package>
@@ -1581,7 +1572,6 @@
         <Package>docbook-xml</Package>
         <Package>docbook-xsl</Package>
         <Package>dolphin</Package>
-        <Package>dolphin-plugins</Package>
         <Package>dosfstools</Package>
         <Package>dotconf</Package>
         <Package>doxygen</Package>
@@ -1589,6 +1579,7 @@
         <Package>e2fsprogs</Package>
         <Package>e2fsprogs-devel</Package>
         <Package>ebook-tools</Package>
+        <Package>editorconfig-core-c</Package>
         <Package>efibootmgr</Package>
         <Package>efivar</Package>
         <Package>elfutils</Package>
@@ -1608,7 +1599,6 @@
         <Package>findutils</Package>
         <Package>firebird-client</Package>
         <Package>firefox</Package>
-        <Package>firefox-lang-tr</Package>
         <Package>flac</Package>
         <Package>flite</Package>
         <Package>fltk</Package>
@@ -1631,8 +1621,6 @@
         <Package>gegl</Package>
         <Package>geoclue</Package>
         <Package>gettext</Package>
-        <Package>gfxboot</Package>
-        <Package>gfxtheme-pisilinux-install</Package>
         <Package>ghostscript</Package>
         <Package>giflib</Package>
         <Package>gimp</Package>
@@ -1744,9 +1732,7 @@
         <Package>glibc-locales-sv</Package>
         <Package>gmic</Package>
         <Package>gmp</Package>
-        <Package>gnome-desktop</Package>
         <Package>gnu-gs-fonts-std</Package>
-        <Package>gnupg</Package>
         <Package>gnutls</Package>
         <Package>gobject-introspection</Package>
         <Package>gperf</Package>
@@ -1759,7 +1745,6 @@
         <Package>grep</Package>
         <Package>groff</Package>
         <Package>grub2</Package>
-        <Package>grub2-editor</Package>
         <Package>gsettings-desktop-schemas</Package>
         <Package>gsm</Package>
         <Package>gsoap</Package>
@@ -1769,7 +1754,7 @@
         <Package>gtk2</Package>
         <Package>gtk3</Package>
         <Package>guile</Package>
-        <Package>gwenview</Package>
+        <Package>guile2.0</Package>
         <Package>gypsy</Package>
         <Package>gzip</Package>
         <Package>harfbuzz</Package>
@@ -1793,7 +1778,6 @@
         <Package>jansson</Package>
         <Package>jasper</Package>
         <Package>jbigkit</Package>
-        <Package>jre7-openjdk-headless</Package>
         <Package>jre8-openjdk-headless</Package>
         <Package>json-c</Package>
         <Package>json-glib</Package>
@@ -1801,15 +1785,11 @@
         <Package>kaccounts-providers</Package>
         <Package>kactivities</Package>
         <Package>kactivities-stats</Package>
-        <Package>kactivitymanagerd</Package>
         <Package>kapidox</Package>
-        <Package>kaptan</Package>
         <Package>karchive</Package>
-        <Package>kate</Package>
         <Package>kauth</Package>
         <Package>kbd</Package>
         <Package>kbookmarks</Package>
-        <Package>kcalc</Package>
         <Package>kcalendarcore</Package>
         <Package>kcmutils</Package>
         <Package>kcodecs</Package>
@@ -1820,16 +1800,11 @@
         <Package>kcoreaddons</Package>
         <Package>kcrash</Package>
         <Package>kdbusaddons</Package>
-        <Package>kde-cli-tools</Package>
-        <Package>kde-gtk-config</Package>
-        <Package>kde-servicemenu-rootactions</Package>
         <Package>kdeclarative</Package>
-        <Package>kdeconnect</Package>
         <Package>kdecorations</Package>
         <Package>kded</Package>
         <Package>kdegraphics-mobipocket</Package>
         <Package>kdelibs4-support</Package>
-        <Package>kdeplasma-addons</Package>
         <Package>kdesignerplugin</Package>
         <Package>kdesu</Package>
         <Package>kdewebkit</Package>
@@ -1840,7 +1815,6 @@
         <Package>kernel</Package>
         <Package>keyutils</Package>
         <Package>kfilemetadata</Package>
-        <Package>kgamma5</Package>
         <Package>kglobalaccel</Package>
         <Package>kguiaddons</Package>
         <Package>kholidays</Package>
@@ -1849,11 +1823,8 @@
         <Package>kiconthemes</Package>
         <Package>kidletime</Package>
         <Package>kimageformats</Package>
-        <Package>kinfocenter</Package>
         <Package>kinit</Package>
         <Package>kio</Package>
-        <Package>kio-extras</Package>
-        <Package>kio-gdrive</Package>
         <Package>kirigami</Package>
         <Package>kitemmodels</Package>
         <Package>kitemviews</Package>
@@ -1865,7 +1836,6 @@
         <Package>knewstuff</Package>
         <Package>knotifications</Package>
         <Package>knotifyconfig</Package>
-        <Package>konsole</Package>
         <Package>kpackage</Package>
         <Package>kparts</Package>
         <Package>kpeople</Package>
@@ -1873,15 +1843,12 @@
         <Package>kplotting</Package>
         <Package>kpmcore</Package>
         <Package>kpty</Package>
-        <Package>kqtquickcharts</Package>
         <Package>kquickcharts</Package>
         <Package>kross</Package>
         <Package>krunner</Package>
-        <Package>kscreen</Package>
         <Package>kscreenlocker</Package>
         <Package>kservice</Package>
         <Package>ksyndication</Package>
-        <Package>ksysguard</Package>
         <Package>ktexteditor</Package>
         <Package>ktextwidgets</Package>
         <Package>ktp-accounts-kcm</Package>
@@ -1892,7 +1859,6 @@
         <Package>kwayland</Package>
         <Package>kwayland-server</Package>
         <Package>kwidgetsaddons</Package>
-        <Package>kwin</Package>
         <Package>kwindowsystem</Package>
         <Package>kxmlgui</Package>
         <Package>kxmlrpcclient</Package>
@@ -2070,20 +2036,6 @@
         <Package>libquadmath</Package>
         <Package>libraw</Package>
         <Package>libraw1394</Package>
-        <Package>libreoffice</Package>
-        <Package>libreoffice-base</Package>
-        <Package>libreoffice-calc</Package>
-        <Package>libreoffice-common</Package>
-        <Package>libreoffice-common-dictionaries</Package>
-        <Package>libreoffice-draw</Package>
-        <Package>libreoffice-en-US</Package>
-        <Package>libreoffice-help-en-US</Package>
-        <Package>libreoffice-help-tr</Package>
-        <Package>libreoffice-impress</Package>
-        <Package>libreoffice-kde5-integration</Package>
-        <Package>libreoffice-math</Package>
-        <Package>libreoffice-tr</Package>
-        <Package>libreoffice-writer</Package>
         <Package>librevenge</Package>
         <Package>librsvg</Package>
         <Package>libsamplerate</Package>
@@ -2150,7 +2102,6 @@
         <Package>lsb-release</Package>
         <Package>lua</Package>
         <Package>lvm2</Package>
-        <Package>lvm2-static</Package>
         <Package>lzo</Package>
         <Package>mailcap</Package>
         <Package>man-db</Package>
@@ -2160,7 +2111,6 @@
         <Package>mdadm</Package>
         <Package>mdadm-static</Package>
         <Package>media-player-info</Package>
-        <Package>memtest86</Package>
         <Package>mesa</Package>
         <Package>mesa-glu</Package>
         <Package>metis</Package>
@@ -2169,7 +2119,6 @@
         <Package>miscfiles</Package>
         <Package>mit-kerberos</Package>
         <Package>mjpegtools</Package>
-        <Package>mkinitcpio</Package>
         <Package>mobile-broadband-provider-info</Package>
         <Package>modemmanager-qt</Package>
         <Package>module-virtualbox</Package>
@@ -2187,7 +2136,6 @@
         <Package>neon</Package>
         <Package>net-tools</Package>
         <Package>nettle</Package>
-        <Package>network-manager-applet</Package>
         <Package>networkmanager-qt</Package>
         <Package>newt</Package>
         <Package>npth</Package>
@@ -2196,7 +2144,6 @@
         <Package>nss-mdns</Package>
         <Package>ntfs-3g</Package>
         <Package>ntfsprogs</Package>
-        <Package>okular</Package>
         <Package>openal</Package>
         <Package>opencl-icd</Package>
         <Package>openconnect</Package>
@@ -2206,19 +2153,16 @@
         <Package>openjpeg2</Package>
         <Package>openldap-client</Package>
         <Package>openpgm</Package>
-        <Package>openssh</Package>
         <Package>openssl</Package>
         <Package>orc</Package>
         <Package>os-prober</Package>
         <Package>oxygen-fonts</Package>
         <Package>oxygen-icons</Package>
         <Package>p11-kit</Package>
-        <Package>package-manager</Package>
         <Package>pam</Package>
         <Package>panda</Package>
         <Package>pango</Package>
         <Package>parted</Package>
-        <Package>partitionmanager</Package>
         <Package>pciutils</Package>
         <Package>pcmciautils</Package>
         <Package>perl</Package>
@@ -2226,31 +2170,24 @@
         <Package>perl-Digest-SHA1</Package>
         <Package>perl-HTML-Parser</Package>
         <Package>perl-HTML-Tagset</Package>
+        <Package>perl-HTTP-Message</Package>
         <Package>perl-Locale-gettext</Package>
+        <Package>perl-URI</Package>
         <Package>piksemel</Package>
         <Package>pinentry</Package>
         <Package>pisi</Package>
         <Package>pisilinux-desktop-services</Package>
         <Package>pisilinux-python</Package>
         <Package>pisilinux-python-xorg</Package>
-        <Package>pisilinux-splash</Package>
-        <Package>pisilinux-theme-maia</Package>
-        <Package>pisilinux-welcome</Package>
         <Package>pixman</Package>
-        <Package>plasma-desktop</Package>
         <Package>plasma-framework</Package>
-        <Package>plasma-integration</Package>
         <Package>plasma-nm</Package>
-        <Package>plasma-pa</Package>
-        <Package>plasma-sdk</Package>
+        <Package>plasma-wayland-protocols</Package>
         <Package>plasma-workspace</Package>
-        <Package>plasma-workspace-wallpapers</Package>
-        <Package>plymouth</Package>
         <Package>plymouth-core-libs</Package>
         <Package>plymouth-graphics-libs</Package>
         <Package>plymouth-plugin-label</Package>
         <Package>plymouth-plugin-script</Package>
-        <Package>plymouth-plugin-two-step</Package>
         <Package>plymouth-theme-pisilinux</Package>
         <Package>plyvel</Package>
         <Package>pm-utils</Package>
@@ -2264,13 +2201,11 @@
         <Package>popt</Package>
         <Package>portaudio</Package>
         <Package>postgresql-lib</Package>
-        <Package>powerdevil</Package>
         <Package>ppp</Package>
         <Package>prison</Package>
         <Package>procps</Package>
         <Package>protobuf</Package>
         <Package>psmisc</Package>
-        <Package>pulseaudio</Package>
         <Package>pulseaudio-libs</Package>
         <Package>pulseaudio-qt</Package>
         <Package>purpose</Package>
@@ -2279,7 +2214,6 @@
         <Package>pypolkit</Package>
         <Package>pyqtermwidget5</Package>
         <Package>python</Package>
-        <Package>python-argparse</Package>
         <Package>python-decorator</Package>
         <Package>python-enum34</Package>
         <Package>python-psutil</Package>
@@ -2301,31 +2235,22 @@
         <Package>qqc2-desktop-style</Package>
         <Package>qrencode</Package>
         <Package>qscintilla2</Package>
-        <Package>qscintilla2-python</Package>
         <Package>qscintilla2-python-common</Package>
-        <Package>qt5-accountsservice</Package>
         <Package>qt5-base</Package>
         <Package>qt5-charts</Package>
-        <Package>qt5-configuration</Package>
         <Package>qt5-connectivity</Package>
         <Package>qt5-declarative</Package>
         <Package>qt5-designer</Package>
         <Package>qt5-graphicaleffects</Package>
-        <Package>qt5-gstreamer</Package>
-        <Package>qt5-imageformats</Package>
         <Package>qt5-keychain</Package>
         <Package>qt5-location</Package>
         <Package>qt5-multimedia</Package>
         <Package>qt5-networkauth</Package>
         <Package>qt5-phonon</Package>
-        <Package>qt5-phonon-backend-gstreamer</Package>
-        <Package>qt5-qdbusviewer</Package>
         <Package>qt5-quickcontrols</Package>
         <Package>qt5-quickcontrols2</Package>
         <Package>qt5-script</Package>
-        <Package>qt5-scxml</Package>
         <Package>qt5-sensors</Package>
-        <Package>qt5-serialbus</Package>
         <Package>qt5-serialport</Package>
         <Package>qt5-speech</Package>
         <Package>qt5-sql-mysql</Package>
@@ -2333,8 +2258,6 @@
         <Package>qt5-sql-postgresql</Package>
         <Package>qt5-sql-sqlite</Package>
         <Package>qt5-svg</Package>
-        <Package>qt5-translations</Package>
-        <Package>qt5-virtualkeyboard</Package>
         <Package>qt5-wayland</Package>
         <Package>qt5-webchannel</Package>
         <Package>qt5-webengine</Package>
@@ -2361,10 +2284,8 @@
         <Package>sbc</Package>
         <Package>schroedinger</Package>
         <Package>scim-libs</Package>
-        <Package>sddm</Package>
         <Package>sdl-image</Package>
         <Package>sed</Package>
-        <Package>service-manager</Package>
         <Package>sg3_utils</Package>
         <Package>sgml-common</Package>
         <Package>shadow</Package>
@@ -2377,18 +2298,15 @@
         <Package>solid</Package>
         <Package>sonnet</Package>
         <Package>soundtouch</Package>
-        <Package>spectacle</Package>
+        <Package>source-highlight</Package>
         <Package>speech-dispatcher</Package>
         <Package>speex</Package>
         <Package>speexdsp</Package>
         <Package>spidermonkey</Package>
         <Package>spirv-tools</Package>
         <Package>sqlite</Package>
-        <Package>squashfs-tools</Package>
         <Package>sshfs</Package>
         <Package>startup-notification</Package>
-        <Package>sudo</Package>
-        <Package>suspend</Package>
         <Package>syntax-highlighting</Package>
         <Package>sysfsutils</Package>
         <Package>syslinux</Package>
@@ -2411,30 +2329,21 @@
         <Package>tslib</Package>
         <Package>twolame</Package>
         <Package>udftools</Package>
-        <Package>udisks2</Package>
         <Package>unixODBC</Package>
         <Package>unrar</Package>
         <Package>unzip</Package>
-        <Package>upower</Package>
         <Package>urlgrabber</Package>
         <Package>usbutils</Package>
-        <Package>user-manager</Package>
         <Package>utempter</Package>
         <Package>util-linux</Package>
-        <Package>uuidd</Package>
         <Package>v86d</Package>
         <Package>vamp-plugin-sdk</Package>
         <Package>vbetool</Package>
         <Package>vcdimager</Package>
-        <Package>vdpau-video</Package>
         <Package>vid.stab</Package>
-        <Package>vim</Package>
         <Package>virt-wrapper</Package>
-        <Package>virtualbox</Package>
         <Package>virtualbox-guest-iso</Package>
-        <Package>virtualbox-guest-utils</Package>
         <Package>vixie-cron</Package>
-        <Package>vlc</Package>
         <Package>vlc-libs</Package>
         <Package>volume_key</Package>
         <Package>vulkan</Package>
@@ -2461,57 +2370,15 @@
         <Package>xdg-utils</Package>
         <Package>xfsprogs</Package>
         <Package>xine-lib</Package>
-        <Package>xinit</Package>
         <Package>xkeyboard-config</Package>
         <Package>xmlto</Package>
         <Package>xorg-app</Package>
-        <Package>xorg-input-acecad</Package>
-        <Package>xorg-input-elographics</Package>
         <Package>xorg-input-evdev</Package>
-        <Package>xorg-input-joystick</Package>
-        <Package>xorg-input-kbd</Package>
         <Package>xorg-input-libinput</Package>
-        <Package>xorg-input-mouse</Package>
-        <Package>xorg-input-synaptics</Package>
-        <Package>xorg-input-vmmouse</Package>
-        <Package>xorg-input-void</Package>
-        <Package>xorg-input-wacom</Package>
         <Package>xorg-server</Package>
-        <Package>xorg-server-common</Package>
-        <Package>xorg-video-amdgpu</Package>
-        <Package>xorg-video-apm</Package>
-        <Package>xorg-video-cirrus</Package>
-        <Package>xorg-video-dummy</Package>
-        <Package>xorg-video-fbdev</Package>
-        <Package>xorg-video-glint</Package>
-        <Package>xorg-video-i128</Package>
-        <Package>xorg-video-i740</Package>
-        <Package>xorg-video-intel</Package>
-        <Package>xorg-video-mach64</Package>
-        <Package>xorg-video-mga</Package>
-        <Package>xorg-video-neomagic</Package>
-        <Package>xorg-video-nouveau</Package>
-        <Package>xorg-video-openchrome</Package>
-        <Package>xorg-video-r128</Package>
-        <Package>xorg-video-radeon</Package>
-        <Package>xorg-video-rendition</Package>
-        <Package>xorg-video-s3virge</Package>
-        <Package>xorg-video-savage</Package>
-        <Package>xorg-video-siliconmotion</Package>
-        <Package>xorg-video-sis</Package>
-        <Package>xorg-video-sisusb</Package>
-        <Package>xorg-video-tdfx</Package>
-        <Package>xorg-video-tga</Package>
-        <Package>xorg-video-trident</Package>
-        <Package>xorg-video-v4l</Package>
-        <Package>xorg-video-vesa</Package>
-        <Package>xorg-video-vmware</Package>
-        <Package>xorg-video-voodoo</Package>
         <Package>xterm</Package>
-        <Package>xvba-video</Package>
         <Package>xvid</Package>
         <Package>xz</Package>
-        <Package>yali</Package>
         <Package>yali-branding-pisilinux</Package>
         <Package>yali-theme-pisilinux</Package>
         <Package>zeromq</Package>

@@ -1,6 +1,8 @@
 *.pyc
 pisiman/gui/ui/main.py
+pisiman/gui/ui/mainv2.py
 pisiman/gui/ui/languages.py
 pisiman/gui/ui/packages.py
 pisiman/gui/ui/packagecollections.py
+pisiman/gui/ui/packagecollection.py
 pisiman/gui/ui/raw_rc.py
