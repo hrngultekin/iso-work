@@ -5,7 +5,7 @@ Pisi Linux iso creation tools and files
 
 Requirements
 ------------
- - cdrkit
+ - xorriso
  - syslinux
  - squashfs-tools
  - pyqtermwidget5 (Required for GUI)

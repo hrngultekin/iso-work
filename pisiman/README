@@ -1,13 +1,20 @@
 Pisiman - Pisi ISO Creator
 ==============================
 
+Pisi Linux iso creation tools and files
+
 Requirements
 ------------
  - xorriso
  - syslinux
  - squashfs-tools
- - pyqtermwidget (Required for GUI)
+ - pyqtermwidget5 (Required for GUI)
+ - python-sip
+ - python-qt5
+ - python-qt5-devel
+ - make
+ - python-pathlib2
+ - python-requests
 
-New Requirements
-----------------
- - dosfstools (Required for iso to formatted fat32 usb )
+Requirements kısımdaki programların sisteminizde kurulu olması gerekmektedir.
+Çalıştırmadan önce pisiman/not dosyasını okuyun.
