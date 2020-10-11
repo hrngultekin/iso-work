@@ -84,11 +84,11 @@ def chroot_comar(image_dir):
 
 def get_exclude_list(project):
     exc = project.exclude_list()[:]
-    image_dir = project.image_dir()
-    path = image_dir + "/boot"
-    for name in os.listdir(path):
-        if name.startswith("kernel") or name.startswith("initramfs"):
-            exc.append("boot/" + name)
+    # image_dir = project.image_dir()
+    # path = image_dir + "/boot"
+    # for name in os.listdir(path):
+    #     if name.startswith("kernel") or name.startswith("initramfs"):
+    #         exc.append("boot/" + name)
     return exc
 
 
@@ -147,6 +147,12 @@ def mkinitcpio(project, prog="mkinitcpio"):
 
         chrun(" ".join(["/usr/bin/" + prog, "-k", kernel_version,
                        "-c /etc/mkinitcpio-live.conf -g /boot/initrd"]))
+        chrun(" ".join(["/usr/bin/" + prog, "-k", kernel_version, "-g",
+                        "/boot/initramfs-%s-fallback.img" % kernel_version,
+                        "-S", "autodetect"]))
+        chrun(" ".join(["/usr/bin/" + prog, "-k", kernel_version,
+                        "-c", "/etc/mkinitcpio.conf",
+                        "-g", "/boot/initramfs-%s.img" % kernel_version]))
 
         run('umount %s/dev' % image_dir)
         run('umount %s/proc' % image_dir)
@@ -512,6 +518,11 @@ def squash_image(project):
                     "{}/usr/share/applications/".format(image_dir))
 
         repo = project.get_repo()
+        kernel_version = repo.packages['kernel'].version
+        autoload_module = "{}/etc/modules.autoload.d/kernel-{}".format(
+            image_dir, ".".join(kernel_version.split(".")[:2]))
+        with open(autoload_module, "w") as autoloads:
+            autoloads.write("vfat\n")
         # kurulumda sorun olmaması için değişiklik yapılan paketler tekrar
         # yüklenecek
         print("baselayout package copy to image_dir")
@@ -520,7 +531,7 @@ def squash_image(project):
             os.makedirs("%s/var/cache/pisi/packages" % repo.cache_dir)
 
         os.system("cp -rf %s/%s %s/var/cache/pisi/packages/" % (repo.cache_dir, baselayout_uri, image_dir))
-        os.system("cp -rf %s/%s %s/var/cache/pisi/packages/" % (repo.cache_dir, repo.packages['kernel'].uri, image_dir))
+        # os.system("cp -rf %s/%s %s/var/cache/pisi/packages/" % (repo.cache_dir, repo.packages['kernel'].uri, image_dir))
 
         # kde yapılandırması ================================================
         if 'plasma-workspace' in project.all_install_image_packages:
@@ -1018,49 +1029,51 @@ def make_iso(project, toUSB=False, dev="/dev/sdc1"):
             else:
                 return "{%s}" % package
 
-        print("release files formatting...")
-        # set version to release templates
-        release_ver = ""
-        with open(os.path.join(image_dir, "etc/pisilinux-release")) as rel:
-            release_ver = rel.read().split()[-1]
+        try:
+            print("release files formatting...")
+            # set version to release templates
+            release_ver = ""
+            with open(os.path.join(image_dir, "etc/pisilinux-release")) as rel:
+                release_ver = rel.read().split()[-1]
 
-        path = os.path.join(iso_dir, "index.html")
-        index_text = ""
-        with open(path) as index:
-            index_text = index.read()
+            path = os.path.join(iso_dir, "index.html")
+            index_text = ""
+            with open(path) as index:
+                index_text = index.read()
 
-        with open(path, "w") as index:
-            index.write(index_text.replace("@release@", release_ver))
+            with open(path, "w") as index:
+                index.write(index_text.replace("@release@", release_ver))
 
-        import re
-        path = os.path.join(iso_dir, "release-notes")
-        for name in os.listdir(path):
-            print("file formatting: {}".format(name))
-            rel_text = ""
-            with open(os.path.join(path, name), "r") as rel:
-                rel_text = rel.read()
-                res = re.findall(".*(\{.+\}).*", rel_text)
+            import re
+            path = os.path.join(iso_dir, "release-notes")
+            for name in os.listdir(path):
+                print("file formatting: {}".format(name))
+                rel_text = ""
+                with open(os.path.join(path, name), "r") as rel:
+                    rel_text = rel.read()
+                    res = re.findall(".*(\{.+\}).*", rel_text)
 
-                if len(res) == 0:
-                    continue
+                    if len(res) == 0:
+                        continue
 
-                fmt = {}
-                for t in res:
-                    package = t[1:-1]
-                    if package == "release":
-                        fmt[package] = release_ver
-                    else:
-                        fmt[package] = version(package)
+                    fmt = {}
+                    for t in res:
+                        package = t[1:-1]
+                        if package == "release":
+                            fmt[package] = release_ver
+                        else:
+                            fmt[package] = version(package)
 
-            rel_text = rel_text.format(**fmt)
+                rel_text = rel_text.format(**fmt)
 
-            with open(os.path.join(path, name), "w") as rel:
-                rel.write(rel_text)
+                with open(os.path.join(path, name), "w") as rel:
+                    rel.write(rel_text)
 
-        del rep
-        del index_text
-        del rel_text
-
+            del rep
+            del index_text
+            del rel_text
+        except Exception as e:
+            print("Paketlerin sürüm bilgisi işlenirken hata oluştu. Hata:", e)
         # setup_grub(project)
         setup_isolinux(project)
         setup_efi(project)
