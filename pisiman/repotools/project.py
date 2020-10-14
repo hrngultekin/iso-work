@@ -17,7 +17,7 @@ import hashlib
 import platform
 import piksemel
 
-import packages
+from . import packages
 from repotools.packages import PackageCollection, PackageSet
 
 
@@ -219,7 +219,7 @@ class Project:
         # Open and parse project file filename
         try:
             doc = piksemel.parse(filename)
-        except OSError, e:
+        except OSError as e:
             if e.errno == 2:
                 raise ExProjectMissing
             raise
@@ -279,8 +279,8 @@ class Project:
             if node:
                 for translation in node.tags("Translation"):
                     translations[translation.getAttribute("language")] = (
-                        unicode(translation.getTagData("Title")),
-                        unicode(translation.getTagData("Description")))
+                        str(translation.getTagData("Title")),
+                        str(translation.getTagData("Description")))
                 return translations
             return None
 
@@ -390,7 +390,7 @@ class Project:
 
                 # Writes Translations
                 translations = packageCollection.insertTag("Translations")
-                for key, item in collection.translations.items():
+                for key, item in list(collection.translations.items()):
                     translation = translations.insertTag("Translation")
                     translation.setAttribute("language", key)
                     translation.insertTag("Title").insertData(item[0])
@@ -454,7 +454,7 @@ class Project:
         # Write the file
         if not filename:
             filename = self.filename
-        f = file(filename, "w")
+        f = open(filename, "w")
         f.write(doc.toPrettyString())
         f.close()
 
@@ -483,7 +483,7 @@ class Project:
         if os.path.exists(dirname):
             if clean:
                 os.system('rm -rf "%s"' % dirname)
-                os.makedirs(dirname)
+                os.makedirs(dirname, exist_ok=True)
         else:
             os.makedirs(dirname)
         return dirname

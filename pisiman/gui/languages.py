@@ -12,7 +12,7 @@
 #
 
 # Qt
-from PyQt5.QtCore import pyqtSignal
+# from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QDialog, QListWidgetItem
 
 # UI
@@ -98,7 +98,7 @@ class LanguagesDialog(QDialog, Ui_LanguagesDialog):
     def accept(self):
         self.languages = []
         selected = self.selectedListWidget
-        for index in xrange(selected.count()):
+        for index in range(selected.count()):
             item = selected.item(index)
             self.languages.append(item.code)
         QDialog.accept(self)
@@ -109,7 +109,7 @@ class LanguagesDialog(QDialog, Ui_LanguagesDialog):
         for code in self.languages:
             item = LanguageWidgetItem(code, LANGUAGES[code])
             selected.addItem(item)
-        for code, label in LANGUAGES.iteritems():
+        for code, label in LANGUAGES.items():
             if code not in self.languages:
                 item = LanguageWidgetItem(code, label)
                 available.addItem(item)

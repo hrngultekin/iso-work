@@ -13,14 +13,14 @@
 
 import os
 import sys
-import urllib2
-import requests
+import urllib.request, urllib.error, urllib.parse
+# import requests
 import piksemel
 import random
 import string
 
 
-from utility import xterm_title
+from .utility import xterm_title
 
 
 class Console:
@@ -51,93 +51,99 @@ class ExPackageCycle(ExPisiIndex):
     pass
 
 
-# def fetch_uri(base_uri, cache_dir, filename, console=None, update_repo=False):
-#     # Dont cache for local repos
-#     if base_uri.startswith("file://") and not filename.startswith("pisi-index.xml"):
-#         return os.path.join(base_uri[7:], filename)
-#
-#     # Check that local file isnt older or has missing parts
-#     path = os.path.join(cache_dir, filename)
-#     if not os.path.exists(path) or (update_repo and filename.startswith("pisi-index.xml")):
-#         if console:
-#             console.started("Fetching '%s'..." % filename)
-#         try:
-#             connection = urllib2.urlopen(os.path.join(base_uri, filename))
-#         except ValueError:
-#             raise ExIndexBogus
-#         filedir = path[:path.rfind("/")]
-#         os.system("mkdir -p %s" % filedir)
-#         output = file(path, "w")
-#         total_size = int(connection.info()['Content-Length'])
-#         size = 0
-#         while size < total_size:
-#             data = connection.read(4096)
-#             output.write(data)
-#             size += len(data)
-#             if console:
-#                 console.progress("Downloaded %d of %d bytes" % (size, total_size), 100 * size / total_size)
-#         output.close()
-#         connection.close()
-#         if console:
-#             console.finished()
-#     return path
-
-# TODO: indirme kısmı incelenecek
 def fetch_uri(base_uri, cache_dir, filename, console=None, update_repo=False):
     # Dont cache for local repos
-    if base_uri.startswith("file://") and \
-            not filename.startswith("pisi-index.xml"):
+    if base_uri.startswith("file://") and not filename.startswith("pisi-index.xml"):
         return os.path.join(base_uri[7:], filename)
-    # print(base_uri, filename)
+
     # Check that local file isnt older or has missing parts
     path = os.path.join(cache_dir, filename)
-    # size = 0
-    if not os.path.exists(path) or \
-            (update_repo and filename.startswith("pisi-index.xml")):
+    if not os.path.exists(path) or (update_repo and filename.startswith("pisi-index.xml")):
         if console:
             console.started("Fetching '%s'..." % filename)
-        if base_uri.startswith("file://"):
-            try:
-                connection = urllib2.urlopen(os.path.join(base_uri, filename))
-            except ValueError:
-                raise ExIndexBogus
-        else:
-            try:
-                addr = os.path.join(base_uri, filename)
-                connection = requests.get(addr, stream=True, verify=False)
-                head = requests.head(addr)
-                size = int(head.headers["Content-Length"])
-            except ValueError:
-                raise ExIndexBogus
-
+        try:
+            if base_uri.startswith("https"):
+                req = urllib.request.Request(
+                    url=os.path.join(base_uri, filename),
+                    headers={'User-Agent': "Mozilla/5.0 (X11; Linux x86_64; rv:81.0) Gecko/20100101 Firefox/81.0"})
+                connection = urllib.request.urlopen(req)
+            else:
+                connection = urllib.request.urlopen(os.path.join(base_uri, filename))
+        except ValueError:
+            raise ExIndexBogus
         filedir = path[:path.rfind("/")]
         os.system("mkdir -p %s" % filedir)
-
-        if base_uri.startswith("file://"):
-            output = open(path, "w")
-            total_size = int(connection.info()['Content-Length'])
-            size = 0
-            while size < total_size:
-                data = connection.read(4096)
-                output.write(data)
-                size += len(data)
-                if console:
-                    console.progress("Downloaded %d of %d bytes\
-                    " % (size, total_size), 100 * size / total_size)
-            output.close()
-        else:
-            written = 0
-            with open(path, 'wb') as fd:
-                for chunk in connection.iter_content(chunk_size=128):
-                    fd.write(chunk)
-                    written += len(chunk)
-                    if console:
-                        console.progress("Downloaded %d of %d bytes\
-                        " % (written, size), 100 * written / size)
+        output = open(path, "bw")
+        total_size = int(connection.info()['Content-Length'])
+        size = 0
+        while size < total_size:
+            data = connection.read(4096)
+            output.write(data)
+            size += len(data)
+            if console:
+                console.progress("Downloaded %d of %d bytes" % (size, total_size), 100 * size / total_size)
+        output.close()
         connection.close()
         if console:
             console.finished()
     return path
+
+# # TODO: indirme kısmı incelenecek
+# def fetch_uri(base_uri, cache_dir, filename, console=None, update_repo=False):
+#     # Dont cache for local repos
+#     if base_uri.startswith("file://") and \
+#             not filename.startswith("pisi-index.xml"):
+#         return os.path.join(base_uri[7:], filename)
+#     # print(base_uri, filename)
+#     # Check that local file isnt older or has missing parts
+#     path = os.path.join(cache_dir, filename)
+#     # size = 0
+#     if not os.path.exists(path) or \
+#             (update_repo and filename.startswith("pisi-index.xml")):
+#         if console:
+#             console.started("Fetching '%s'..." % filename)
+#         if base_uri.startswith("file://"):
+#             try:
+#                 connection = urllib.request.urlopen(os.path.join(base_uri, filename))
+#             except ValueError:
+#                 raise ExIndexBogus
+#         else:
+#             try:
+#                 addr = os.path.join(base_uri, filename)
+#                 connection = requests.get(addr, stream=True, verify=False)
+#                 head = requests.head(addr)
+#                 size = int(head.headers["Content-Length"])
+#             except ValueError:
+#                 raise ExIndexBogus
+#
+#         filedir = path[:path.rfind("/")]
+#         os.system("mkdir -p %s" % filedir)
+#
+#         if base_uri.startswith("file://"):
+#             output = open(path, "w")
+#             total_size = int(connection.info()['Content-Length'])
+#             size = 0
+#             while size < total_size:
+#                 data = connection.read(4096)
+#                 output.write(data)
+#                 size += len(data)
+#                 if console:
+#                     console.progress("Downloaded %d of %d bytes\
+#                     " % (size, total_size), 100 * size / total_size)
+#             output.close()
+#         else:
+#             written = 0
+#             with open(path, 'wb') as fd:
+#                 for chunk in connection.iter_content(chunk_size=128):
+#                     fd.write(chunk)
+#                     written += len(chunk)
+#                     if console:
+#                         console.progress("Downloaded %d of %d bytes\
+#                         " % (written, size), 100 * written / size)
+#         connection.close()
+#         if console:
+#             console.finished()
+#     return path
 
 
 def random_id():
@@ -233,8 +239,7 @@ class Package:
                 self.description = tag.firstChild().data()
         deps = node.getTag('RuntimeDependencies')
         if deps:
-            self.depends = map(
-                lambda x: x.firstChild().data(), deps.tags('Dependency'))
+            self.depends = [x.firstChild().data() for x in deps.tags('Dependency')]
             for anyDeps in deps.tags("AnyDependency"):
                 self.depends.append(anyDeps.getTagData("Dependency"))
         else:
@@ -296,8 +301,8 @@ class Repository:
                 try a different index format.")
                 return
 
-            data = open(path).read()
-            data = lzma.decompress(data)
+            data = open(path, "br").read()
+            data = lzma.decompress(data).decode("utf-8")
             doc = piksemel.parseString(data)
         else:
             doc = piksemel.parse(path)
@@ -321,16 +326,17 @@ class Repository:
                 self.components[p.component].append(p.name)
             else:
                 self.components[p.component] = []
-        from pisi.graph import Digraph, CycleException
-        dep_graph = Digraph()
-        for name in self.packages:
-            p = self.packages[name]
-            for dep in p.depends:
-                dep_graph.add_edge(name, dep)
-        try:
-            dep_graph.dfs()
-        except CycleException as c:
-            raise ExPackageCycle(c.cycle)
+        # WARNING: pisi python2 üzerinde çalıştığından geçici olarak kaldırıldı
+        # from pisi.graph import Digraph, CycleException
+        # dep_graph = Digraph()
+        # for name in self.packages:
+        #     p = self.packages[name]
+        #     for dep in p.depends:
+        #         dep_graph.add_edge(name, dep)
+        # try:
+        #     dep_graph.dfs()
+        # except CycleException as c:
+        #     raise ExPackageCycle(c.cycle)
 
     def make_index(self, package_list):
         doc = piksemel.newDocument("PISI")
@@ -352,8 +358,8 @@ class Repository:
                 or try a different index format.")
                 return
 
-            data = open(indexpath).read()
-            data = lzma.decompress(data)
+            data = open(indexpath, "rb").read()
+            data = lzma.decompress(data).decode("utf-8")
             doc_index = piksemel.parseString(data)
         else:
             doc_index = piksemel.parse(indexpath)
@@ -385,9 +391,9 @@ class Repository:
             index += 1
         index = self.make_index(package_list)
         import bz2
-        data = bz2.compress(index)
+        data = bz2.compress(index.encode("utf-8"))
         import hashlib
-        f = open(os.path.join(path, "%s-index.xml.bz2") % index_name, "w")
+        f = open(os.path.join(path, "%s-index.xml.bz2") % index_name, "bw")
         f.write(data)
         f.close()
         f = open(os.path.join(path, "%s-index.xml.bz2.sha1sum") % index_name, "w")
@@ -406,7 +412,7 @@ class Repository:
             collectionTag.insertTag("icon").insertData(collection.icon)
             translationsTag = collectionTag.insertTag("translations")
             translationsTag.setAttribute("default", default_language)
-            for languageCode, translation in collection.translations.items():
+            for languageCode, translation in list(collection.translations.items()):
                 translationTag = translationsTag.insertTag("translation")
                 translationTag.setAttribute("language", languageCode)
                 translationTag.insertTag("title").insertData(translation[0])
@@ -419,7 +425,7 @@ class Repository:
         import hashlib
         f = open(os.path.join(path, "collection.xml.sha1sum"), "w")
         s = hashlib.sha1()
-        s.update(doc.toPrettyString())
+        s.update(doc.toPrettyString().encode("utf-8"))
         f.write(s.hexdigest())
         f.close()
 

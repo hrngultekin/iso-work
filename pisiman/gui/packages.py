@@ -12,7 +12,7 @@
 #
 
 # Qt
-from PyQt5.QtCore import pyqtSignal, Qt
+from PyQt5.QtCore import Qt  # pyqtSignal,
 from PyQt5.QtWidgets import QDialog, QTreeWidgetItem
 from PyQt5.QtGui import QBrush, QColor
 
@@ -98,10 +98,10 @@ class PackagesDialog(QDialog, Ui_PackagesDialog):
         self.comboFilter.currentIndexChanged[int].connect(self.slotComboFilter)
 
         # Package/Component changes
-        self.treeComponents.currentItemChanged[QTreeWidgetItem ,QTreeWidgetItem ].connect(self.slotSelectComponent)
-        self.treeComponents.itemClicked[QTreeWidgetItem , int].connect(self.slotClickComponent)
-        self.treePackages.currentItemChanged[QTreeWidgetItem ,QTreeWidgetItem ].connect(self.slotSelectPackage)
-        self.treePackages.itemClicked[QTreeWidgetItem , int].connect(self.slotClickPackage)
+        self.treeComponents.currentItemChanged[QTreeWidgetItem, QTreeWidgetItem].connect(self.slotSelectComponent)
+        self.treeComponents.itemClicked[QTreeWidgetItem, int].connect(self.slotClickComponent)
+        self.treePackages.currentItemChanged[QTreeWidgetItem, QTreeWidgetItem].connect(self.slotSelectPackage)
+        self.treePackages.itemClicked[QTreeWidgetItem, int].connect(self.slotClickPackage)
 
         self.subcomponents = False
         self.component_only = False
@@ -115,7 +115,7 @@ class PackagesDialog(QDialog, Ui_PackagesDialog):
             Fill in the blanks :)
         """
         # Packages
-        for component, cpkgs in self.repo.components.items():
+        for component, cpkgs in list(self.repo.components.items()):
             for name in cpkgs:
                 package = self.repo.packages[name]
                 item = PackageWidgetItem(self.treePackages, package, component)
@@ -123,7 +123,7 @@ class PackagesDialog(QDialog, Ui_PackagesDialog):
                     item.setChecked(True)
 
         # Resize columns to their contents
-        for i in xrange(self.treePackages.columnCount()):
+        for i in range(self.treePackages.columnCount()):
             self.treePackages.resizeColumnToContents(i)
 
         # Sort by package name in ascending order
@@ -145,20 +145,20 @@ class PackagesDialog(QDialog, Ui_PackagesDialog):
         self.packages = []
         self.components = []
         self.all_packages = []
-        for index in xrange(self.treePackages.topLevelItemCount()):
+        for index in range(self.treePackages.topLevelItemCount()):
             item = self.treePackages.topLevelItem(index)
             if item.isChecked():
                 self.packages.append(item.package.name)
             if item.isRequired():
                 self.all_packages.append(item.package.name)
-        for index in xrange(self.treeComponents.topLevelItemCount()):
+        for index in range(self.treeComponents.topLevelItemCount()):
             item = self.treeComponents.topLevelItem(index)
             if item.isChecked():
                 self.components.append(item.component)
         QDialog.accept(self)
 
     def slotSearchPackage(self, text):
-        for index in xrange(self.treePackages.topLevelItemCount()):
+        for index in range(self.treePackages.topLevelItemCount()):
             item = self.treePackages.topLevelItem(index)
             if item.text(0).__contains__(text):
                 item.setHidden(False)
@@ -178,7 +178,7 @@ class PackagesDialog(QDialog, Ui_PackagesDialog):
         """
             Filters package list.
         """
-        for index in xrange(self.treePackages.topLevelItemCount()):
+        for index in range(self.treePackages.topLevelItemCount()):
             item = self.treePackages.topLevelItem(index)
             if selected_only:
                 if item.isChecked() or item.isRequired():
@@ -208,7 +208,7 @@ class PackagesDialog(QDialog, Ui_PackagesDialog):
         """
         if item.isChecked():
             if item.component not in self.components:
-                print item.text(0), "selected"
+                # print(item.text(0), "selected")
                 self.components.append(item.component)
                 self.updatePackages()
         else:
@@ -228,7 +228,7 @@ class PackagesDialog(QDialog, Ui_PackagesDialog):
         """
         if item.isChecked():
             if item.package.name not in self.packages:
-                print item.text(0), "selected"
+                # print(item.text(0), "selected")
                 self.packages.append(item.package.name)
                 self.updatePackages()
         else:
@@ -257,7 +257,7 @@ class PackagesDialog(QDialog, Ui_PackagesDialog):
                     if dep not in required_packages:
                         required_packages.append(dep)
 
-        for index in xrange(self.treePackages.topLevelItemCount()):
+        for index in range(self.treePackages.topLevelItemCount()):
             item = self.treePackages.topLevelItem(index)
             selected = item.package.name in self.packages
             required = item.package.name in required_packages

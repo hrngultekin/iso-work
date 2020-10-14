@@ -12,8 +12,8 @@
 #
 
 # Qt
-from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QWidget,QApplication
+# from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QApplication  # , QWidget
 
 # Main form
 from gui.main import MainWindow

@@ -22,7 +22,7 @@ import hashlib
 import tempfile
 import subprocess
 
-import pathlib2
+# import pathlib2
 
 from repotools.utility import xterm_title, wait_bus
 
@@ -45,7 +45,7 @@ def run(cmd, ignore_error=False):
     print(cmd)
     ret = os.system(cmd)
     if ret and not ignore_error:
-        print("%s returned %s" % (cmd, ret))
+        print(("%s returned %s" % (cmd, ret)))
         sys.exit(1)
 
 
@@ -108,7 +108,8 @@ def setup_efi(project):
 
     path = os.path.join(image_dir, "boot")
     for name in os.listdir(path):
-        if name.startswith("kernel") or name.startswith("initr") or name.endswith(".bin"):
+        # if name.startswith("kernel") or name.startswith("initr") or name.endswith(".bin"):
+        if name.startswith("kernel") or name == "initrd":
             if name.startswith("kernel"):
                 copy(os.path.join(path, name), "EFI/pisi/kernel.efi")
             elif name.startswith("initrd"):
@@ -315,7 +316,7 @@ def setup_isolinux(project):
 
     image_dir = project.image_dir()
     iso_dir = project.iso_dir()
-    repo = project.get_repo()
+    # repo = project.get_repo()
 
     # Setup dir
     path = os.path.join(iso_dir, "isolinux")
@@ -333,10 +334,11 @@ def setup_isolinux(project):
     path = os.path.join(image_dir, "boot")
     for name in os.listdir(path):
         print(name)
-        if name.startswith("kernel") or name.startswith("initr") or name.endswith(".bin"):
+        # if name.startswith("kernel") or name.startswith("initr") or name.endswith(".bin"):
+        if name.startswith("kernel") or name == "initrd":
             if name.startswith("kernel"):
                 copy(os.path.join(path, name), "pisi/boot/kernel")
-            elif name == "initrd" or name.startswith("initramfs"):
+            elif name == "initrd":  # or name.startswith("initramfs"):
                 copy(os.path.join(path, name), "pisi/boot/initrd")
 
     tmplpath = os.path.join(image_dir, "usr/share/gfxtheme/pisilinux/install")
@@ -349,8 +351,10 @@ def setup_isolinux(project):
     generate_isolinux_conf(project)
 
     # we don't use debug anymore for the sake of hybrid
-    copy(os.path.join(image_dir, "usr/lib/syslinux/bios/isolinux.bin"), "%s/isolinux.bin" % dest)
-    copy(os.path.join(image_dir, "usr/lib/syslinux/bios/isohdpfx.bin"), "%s/isohdpfx.bin" % dest)
+    copy(os.path.join(image_dir, "usr/lib/syslinux/bios/isolinux.bin"),
+         "%s/isolinux.bin" % dest)
+    copy(os.path.join(image_dir, "usr/lib/syslinux/bios/isohdpfx.bin"),
+         "%s/isohdpfx.bin" % dest)
     copy(os.path.join(image_dir, "usr/lib/syslinux/bios/hdt.c32"), dest)
 
     # for boot new syslinux
@@ -364,9 +368,10 @@ def setup_isolinux(project):
     copy(os.path.join(image_dir, "usr/lib/syslinux/bios/gfxboot.c32"), dest)
     copy(os.path.join(image_dir, "usr/share/misc/pci.ids"), dest)
 
-    kernel_version = open(os.path.join(image_dir, "etc/kernel/kernel")).read()
+    # kernel_version = open(os.path.join(image_dir, "etc/kernel/kernel")).read()
     # copy(os.path.join(image_dir, "lib/modules/%s/modules.pcimap" % kernel_version), dest)
-    copy(os.path.join(image_dir, "boot/memtest"), os.path.join(iso_dir, "pisi/boot"))
+    copy(os.path.join(image_dir, "boot/memtest"),
+         os.path.join(iso_dir, "pisi/boot"))
 
 
 #
@@ -388,7 +393,7 @@ def setup_live_kdm(project):
                 lines.append(line)
         open(kdmrc_path, "w").write("".join(lines))
     else:
-        print("*** %s doesn't exist, setup_live_kdm() returned" % kdmrc_path)
+        print(("*** %s doesn't exist, setup_live_kdm() returned" % kdmrc_path))
 
 
 def setup_live_sddm(project):
@@ -408,8 +413,8 @@ def setup_live_sddm(project):
                 lines.append(line)
         open(sddmconf_path, "w").write("".join(lines))
     else:
-        print("*** {} doesn't exist, setup_live_sddm() returned".format(
-            sddmconf_path))
+        print(("*** {} doesn't exist, setup_live_sddm() returned".format(
+            sddmconf_path)))
 
 
 def setup_live_policykit_conf(project):
@@ -461,8 +466,8 @@ def copyPisiIndex(project):
 
     run('cp -PR "%s" "%s"' % (repo, path))
     run('sha1sum "%s" > "%s"' % (repo, "%s.sha1sum" % path))
-    print('cp -PR "%s" "%s"' % (repo, path))
-    print('sha1sum "%s" > "%s"' % (repo, "%s.sha1sum" % path))
+    print(('cp -PR "%s" "%s"' % (repo, path)))
+    print(('sha1sum "%s" > "%s"' % (repo, "%s.sha1sum" % path)))
 
 
 def install_packages(project):
@@ -501,7 +506,8 @@ def squash_image(project):
     def cp2skel(source, dest):
         if not os.path.exists("{}/etc/skel/{}".format(image_dir, dest)):
             # os.mkdir("{}/etc/skel/{}".format(image_dir, dest))
-            pathlib2.Path("{}/etc/skel/{}".format(image_dir, dest)).mkdir(parents=True)
+            os.makedirs("{}/etc/skel/{}".format(image_dir, dest))
+            # pathlib2.Path("{}/etc/skel/{}".format(image_dir, dest)).mkdir(parents=True)
             # pass
 
         shutil.copy(source, "{}/etc/skel/{}".format(image_dir, dest))
@@ -513,7 +519,7 @@ def squash_image(project):
         # shutil.copy("./data/yali/yali.desktop",
         #             "{}/home/pisi/.config/autostart/".format(image_dir))
         shutil.copy("./data/yali/org.pisilinux.yali.policy",
-                    "{}/usr/share/polkit-1/actions/".format(image_dir))
+                    f"{image_dir}/usr/share/polkit-1/actions/")
         shutil.copy("./data/yali/yali-rescue.desktop",
                     "{}/usr/share/applications/".format(image_dir))
 
@@ -530,18 +536,19 @@ def squash_image(project):
         if not os.path.exists("%s/var/cache/pisi/packages" % repo.cache_dir):
             os.makedirs("%s/var/cache/pisi/packages" % repo.cache_dir)
 
-        os.system("cp -rf %s/%s %s/var/cache/pisi/packages/" % (repo.cache_dir, baselayout_uri, image_dir))
+        os.system(f"cp -rf {repo.cache_dir}/{baselayout_uri} \
+            {image_dir}/var/cache/pisi/packages/")
         # os.system("cp -rf %s/%s %s/var/cache/pisi/packages/" % (repo.cache_dir, repo.packages['kernel'].uri, image_dir))
 
         # kde yapılandırması ================================================
         if 'plasma-workspace' in project.all_install_image_packages:
-            os.system("cp -rf ./data/kde_config/.config {}/home/pisi".format(image_dir))
-            os.system("cp -rf ./data/kde_config/.local {}/home/pisi".format(image_dir))
+            os.system(f"cp -rf ./data/kde_config/.config {image_dir}/home/pisi")
+            os.system(f"cp -rf ./data/kde_config/.local {image_dir}/home/pisi")
             chrun("chown -R pisi:wheel /home/pisi/.config")
             chrun("chown -R pisi:wheel /home/pisi/.local")
 
-            os.system("cp -rf %s/%s %s/var/cache/pisi/packages/" % (repo.cache_dir, repo.packages['sddm'].uri, image_dir))
-
+            os.system(f"cp -rf {repo.cache_dir}/{repo.packages['sddm'].uri} \
+                {image_dir}/var/cache/pisi/packages/")
 
         # kde yapılandırması ================================================
 
@@ -592,10 +599,10 @@ def squash_image(project):
 
     mkinitcpio(project)
 
-    print("squashfs image dir%s" % image_dir)
+    print(("squashfs image dir%s" % image_dir))
     if not image_dir.endswith("/"):
         image_dir += "/"
-    print("later squashfs image dir%s" % image_dir)
+    print(("later squashfs image dir%s" % image_dir))
     temp = tempfile.NamedTemporaryFile()
     f = open(temp.name, "w")
     f.write("\n".join(get_exclude_list(project)))
@@ -663,12 +670,12 @@ def make_repos(project):
 def check_file(repo_dir, name, _hash):
     path = os.path.join(repo_dir, name)
     if not os.path.exists(path):
-        print("\nPackage missing: %s" % path)
+        print(("\nPackage missing: %s" % path))
         return
-    data = open(path).read()
+    data = open(path, "br").read()
     cur_hash = hashlib.sha1(data).hexdigest()
     if cur_hash != _hash:
-        print("\nWrong hash: %s" % path)
+        print(("\nWrong hash: %s" % path))
         return False
     return True
 
@@ -756,7 +763,7 @@ def make_image(project):
         image_dir = project.image_dir(clean=True)
         run('pisi --yes-all -D"%s" ar pisilinux-install %s --ignore-check\
             ' % (image_dir, repo_dir + "/pisi-index.xml.bz2"))
-        print("project type = ", project.type)
+        print(("project type = ", project.type))
         if project.type == "install":
             if project.all_install_image_packages:
                 install_image_packages = " ".join(
@@ -806,7 +813,6 @@ def make_image(project):
         chroot_comar(image_dir)
         chrun("/usr/bin/pisi configure-pending baselayout")
 
-        # WARNING: anlık olarakçıktı vermesini sağla
         def chrun2(cmd, shell=True, env=os.environ.copy()):
             proc = subprocess.Popen(
                 'chroot "{}" {}'.format(image_dir, cmd),
@@ -815,7 +821,7 @@ def make_image(project):
                 stderr=subprocess.PIPE)
             for line in iter(proc.stdout.readline, b''):
                 try:
-                    print(line[:-1])
+                    print(line[:-1].decode("utf-8"))
                 except Exception as e:
                     print(e)
             print(proc.stderr.read())
@@ -825,7 +831,7 @@ def make_image(project):
 
         ret = chrun2("/usr/bin/pisi configure-pending -dv")
         print(ret)
-        print("="*80)
+        print("=" * 80)
         if ret != 0:
             chrun2("service dbus restart")
             chrun2("/usr/bin/pisi configure-pending -dv")
@@ -906,10 +912,10 @@ def generate_sort_list(iso_dir):
     # Highest weight -> nearer to the inside,
     # lowest weight -> outwards
     packages = glob.glob("%s/repo/*.pisi" % iso_dir)
-    package_list = dict([(k, os.stat(k).st_size) for k in packages]).items()
+    package_list = list(dict([(k, os.stat(k).st_size) for k in packages]).items())
     package_list.sort(key=lambda x: x[1], reverse=True)
 
-    for i in xrange(len(packages)):
+    for i in range(len(packages)):
         package_list.insert(i, (package_list.pop(i)[0], 100+10*i))
 
     # Move baselayout to the top
@@ -923,7 +929,7 @@ def generate_sort_list(iso_dir):
 def make_EFI(project, grub=True):
 
     work_dir = os.path.join(project.work_dir)
-    img_dir = os.path.join(project.work_dir)
+    # img_dir = os.path.join(project.work_dir)
     # configdir = "./config"  # os.path.join(project.config_files)
     iso_dir = project.iso_dir()
     efi_tmp = project.efi_tmp_path_dir(clean=True)
@@ -1024,7 +1030,7 @@ def make_iso(project, toUSB=False, dev="/dev/sdc1"):
         rep = project.get_repo()
 
         def version(package, rep=rep):
-            if package in rep.packages.keys():
+            if package in list(rep.packages.keys()):
                 return rep.packages[package].version
             else:
                 return "{%s}" % package
@@ -1047,7 +1053,7 @@ def make_iso(project, toUSB=False, dev="/dev/sdc1"):
             import re
             path = os.path.join(iso_dir, "release-notes")
             for name in os.listdir(path):
-                print("file formatting: {}".format(name))
+                print(("file formatting: {}".format(name)))
                 rel_text = ""
                 with open(os.path.join(path, name), "r") as rel:
                     rel_text = rel.read()
@@ -1073,7 +1079,7 @@ def make_iso(project, toUSB=False, dev="/dev/sdc1"):
             del index_text
             del rel_text
         except Exception as e:
-            print("Paketlerin sürüm bilgisi işlenirken hata oluştu. Hata:", e)
+            print(("Paketlerin sürüm bilgisi işlenirken hata oluştu. Hata:", e))
         # setup_grub(project)
         setup_isolinux(project)
         setup_efi(project)

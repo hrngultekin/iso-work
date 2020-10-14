@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2005-2009, TUBITAK/UEKAE
@@ -23,7 +23,7 @@ def maker(op, project_file):
     project = project.Project()
     err = project.open(project_file)
     if err:
-        print("ERROR: %s" % err)
+        print(("ERROR: %s" % err))
         return
 
     start = time.time()
@@ -39,16 +39,16 @@ def maker(op, project_file):
                 return
             except packages.ExPackageCycle as e:
                 cycle = " > ".join(e.args[0])
-                print("ERROR: package index has errors. Cyclic dependency found:\n  %s." % cycle)
+                print(("ERROR: package index has errors. Cyclic dependency found:\n  %s." % cycle))
                 return
             except packages.ExPackageMissing as e:
-                print("ERROR: Package index has errors. '%s' depends on non-existing '%s'." % e.args)
+                print(("ERROR: Package index has errors. '%s' depends on non-existing '%s'." % e.args))
                 return
             missing_components, missing_packages = project.get_missing()
 
             if len(missing_components):
                 print("WARNING: There are missing components. Removing.")
-                print("\n".join(missing_components))
+                print(("\n".join(missing_components)))
                 if project.package_collections:
                     for component in missing_components:
                         for collection in project.package_collections:
@@ -61,7 +61,7 @@ def maker(op, project_file):
                 update_repo = False
             if len(missing_packages):
                 print("WARNING: There are missing packages. Removing.")
-                print("\n".join(missing_packages))
+                print(("\n".join(missing_packages)))
                 if project.package_collections:
                     for package in missing_packages:
                         for collection in project.package_collections:
@@ -91,7 +91,7 @@ def maker(op, project_file):
 
 
 def usage(app):
-    print("Usage: %s [command] path/to/project.xml" % app)
+    print(("Usage: %s [command] path/to/project.xml" % app))
     print()
     print("Commands:")
     print("  make-repo  : Make local repos")

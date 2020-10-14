@@ -20,8 +20,8 @@ import QTermWidget
 
 from PyQt5.QtWidgets import (QMessageBox, QMainWindow, QFileDialog,
                              QListWidgetItem, QAction)
-from PyQt5.QtGui import QIcon, QFont
-from PyQt5.QtCore import pyqtSignal, QFile, Qt
+from PyQt5.QtGui import QFont  # QIcon,
+from PyQt5.QtCore import Qt  # pyqtSignal, QFile,
 
 
 # UI
@@ -42,13 +42,13 @@ from gui.packagecollection import PackageCollectionDialog
 from gui.progress import Progress
 
 # Repository tools
-from repotools.packages import (Repository, ExIndexBogus, ExPackageCycle,
-                                ExPackageMissing)
+from repotools.packages import (ExIndexBogus, ExPackageCycle,
+                                ExPackageMissing)  # Repository,
 from repotools.project import Project, ExProjectMissing, ExProjectBogus
 
 import gettext
 
-_ = lambda x: gettext.ldgettext("pardusman", x)
+_ = lambda x: gettext.ldgettext("pardusman", x).decode("utf-8")
 
 
 def get_finished_status(project):
@@ -216,7 +216,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self, _("Save project"), os.getcwd(), "Xml Files (*.xml)")
         filename = filename[0]
         if filename:
-            self.project.filename = unicode(filename)
+            self.project.filename = str(filename)
             self.slotSave()
 
     def get_path(self, text):
@@ -253,7 +253,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             "Pisi Index Files(*-index.xml *-index.xml.xz)")
         filename = filename[0]
         if filename:
-            filename = unicode(filename)
+            filename = str(filename)
             if filename.startswith("/"):
                 filename = "file://%s" % filename
             self.lineRepository.setText(filename)
@@ -350,7 +350,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.listPackageCollection.currentItem(
             ).collection.default = "True"
             currentIndex = self.listPackageCollection.currentRow()
-            for index in xrange(self.listPackageCollection.count()):
+            for index in range(self.listPackageCollection.count()):
                 if index == currentIndex:
                     pass
                 else:
@@ -593,7 +593,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def updateCollection(self):
         self.project.package_collections = []
-        for index in xrange(self.listPackageCollection.count()):
+        for index in range(self.listPackageCollection.count()):
             self.project.package_collections.append(
                 self.listPackageCollection.item(index).collection)
 
@@ -619,13 +619,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
             Updates project information.
         """
-        self.project.title = unicode(self.lineTitle.text())
-        self.project.repo_uri = unicode(self.lineRepository.text())
-        self.project.work_dir = unicode(self.lineWorkFolder.text())
-        self.project.live_repo_uri = unicode(self.lineLiveIsoRepo.text())
-        self.project.release_files = unicode(self.lineReleaseFiles.text())
-        self.project.plugin_package = unicode(self.linePluginPackage.text())
-        self.project.extra_params = unicode(self.lineParameters.text())
+        self.project.title = str(self.lineTitle.text())
+        self.project.repo_uri = str(self.lineRepository.text())
+        self.project.work_dir = str(self.lineWorkFolder.text())
+        self.project.live_repo_uri = str(self.lineLiveIsoRepo.text())
+        self.project.release_files = str(self.lineReleaseFiles.text())
+        self.project.plugin_package = str(self.linePluginPackage.text())
+        self.project.extra_params = str(self.lineParameters.text())
         self.project.type = ["install", "live"][self.comboType.currentIndex()]
         self.project.squashfs_comp_type = [
             "xz", "gzip", "lzma", "lzo"][self.comboCompression.currentIndex()]
@@ -638,13 +638,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
             Loads project information.
         """
-        self.lineTitle.setText(unicode(self.project.title))
-        self.lineRepository.setText(unicode(self.project.repo_uri))
-        self.lineWorkFolder.setText(unicode(self.project.work_dir))
-        self.lineLiveIsoRepo.setText(unicode(self.project.live_repo_uri))
-        self.lineReleaseFiles.setText(unicode(self.project.release_files))
-        self.linePluginPackage.setText(unicode(self.project.plugin_package))
-        self.lineParameters.setText(unicode(self.project.extra_params))
+        self.lineTitle.setText(str(self.project.title))
+        self.lineRepository.setText(str(self.project.repo_uri))
+        self.lineWorkFolder.setText(str(self.project.work_dir))
+        self.lineLiveIsoRepo.setText(str(self.project.live_repo_uri))
+        self.lineReleaseFiles.setText(str(self.project.release_files))
+        self.linePluginPackage.setText(str(self.project.plugin_package))
+        self.lineParameters.setText(str(self.project.extra_params))
         self.comboType.setCurrentIndex(
             ["install", "live"].index(self.project.type))
         self.comboCompression.setCurrentIndex(
@@ -678,7 +678,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             os.chdir(repo_path)
             if not os.path.exists("../missing.txt"):
                 os.chdir(curdir)
-                QMessageBox.warning(self, self.title, _("Check repo before download.\nIf the repo is checked, there are no lost packages."))
+                QMessageBox.warning(
+                    self, self.title,
+                    _("Check repo before download.\nIf the repo is checked, \
+                        there are no lost packages."))
                 # print("check repo before download")
                 return
 
@@ -695,10 +698,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 else:
                     _path = _path.format(pack[0], pack)
 
-                __file = os.listdir(_path)
-                print(_path)
-                for f in __file:
-                    os.remove(_path + "/" + f)
+                if os.path.exists(_path):
+                    __file = os.listdir(_path)
+                    print(_path)
+                    for f in __file:
+                        if os.path.exists(_path + "/" + f):
+                            os.remove(_path + "/" + f)
 
             # os.system("pisi fc {} --runtime-deps".format(
             os.system("pisi fc {}".format(
@@ -750,7 +755,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         try:
             self.repo = self.project.get_repo(
                 self.progress, update_repo=update_repo)
-        except ExIndexBogus as e:
+        except ExIndexBogus:  # as e:
             # print(e.args[0])
             self.progress.finished()
             QMessageBox.warning(self, self.title, _("Unable to load package \
