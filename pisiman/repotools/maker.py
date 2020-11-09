@@ -22,7 +22,7 @@ import hashlib
 import tempfile
 import subprocess
 
-import pathlib2
+# import pathlib2
 
 from repotools.utility import xterm_title, wait_bus
 
@@ -108,7 +108,8 @@ def setup_efi(project):
 
     path = os.path.join(image_dir, "boot")
     for name in os.listdir(path):
-        if name.startswith("kernel") or name.startswith("initr") or name.endswith(".bin"):
+        # if name.startswith("kernel") or name.startswith("initr") or name.endswith(".bin"):
+        if name.startswith("kernel") or name == "initrd":
             if name.startswith("kernel"):
                 copy(os.path.join(path, name), "EFI/pisi/kernel.efi")
             elif name.startswith("initrd"):
@@ -333,10 +334,11 @@ def setup_isolinux(project):
     path = os.path.join(image_dir, "boot")
     for name in os.listdir(path):
         print(name)
-        if name.startswith("kernel") or name.startswith("initr") or name.endswith(".bin"):
+        # if name.startswith("kernel") or name.startswith("initr") or name.endswith(".bin"):
+        if name.startswith("kernel") or name == "initrd":
             if name.startswith("kernel"):
                 copy(os.path.join(path, name), "pisi/boot/kernel")
-            elif name == "initrd" or name.startswith("initramfs"):
+            elif name == "initrd":  # or name.startswith("initramfs"):
                 copy(os.path.join(path, name), "pisi/boot/initrd")
 
     tmplpath = os.path.join(image_dir, "usr/share/gfxtheme/pisilinux/install")
@@ -500,8 +502,8 @@ def squash_image(project):
 
     def cp2skel(source, dest):
         if not os.path.exists("{}/etc/skel/{}".format(image_dir, dest)):
-            # os.mkdir("{}/etc/skel/{}".format(image_dir, dest))
-            pathlib2.Path("{}/etc/skel/{}".format(image_dir, dest)).mkdir(parents=True)
+            os.makedirs("{}/etc/skel/{}".format(image_dir, dest))
+            # pathlib2.Path("{}/etc/skel/{}".format(image_dir, dest)).mkdir(parents=True)
             # pass
 
         shutil.copy(source, "{}/etc/skel/{}".format(image_dir, dest))

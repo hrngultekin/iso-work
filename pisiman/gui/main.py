@@ -20,8 +20,8 @@ import QTermWidget
 
 from PyQt5.QtWidgets import (QMessageBox, QMainWindow, QFileDialog,
                              QListWidgetItem, QAction)
-from PyQt5.QtGui import QIcon, QFont
-from PyQt5.QtCore import pyqtSignal, QFile, Qt
+from PyQt5.QtGui import QFont  # QIcon,
+from PyQt5.QtCore import Qt  # pyqtSignal, QFile,
 
 
 # UI
@@ -695,10 +695,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 else:
                     _path = _path.format(pack[0], pack)
 
-                __file = os.listdir(_path)
-                print(_path)
-                for f in __file:
-                    os.remove(_path + "/" + f)
+                if os.path.exists(_path):
+                    __file = os.listdir(_path)
+                    print(_path)
+                    for f in __file:
+                        if os.path.exists(_path + "/" + f):
+                            os.remove(_path + "/" + f)
 
             # os.system("pisi fc {} --runtime-deps".format(
             os.system("pisi fc {}".format(

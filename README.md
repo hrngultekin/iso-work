@@ -3,18 +3,8 @@ iso-work
 
 Pisi Linux iso creation tools and files
 
-Requirements
-------------
- - xorriso
- - syslinux
- - squashfs-tools
- - pyqtermwidget5 (Required for GUI)
- - python-sip
- - python-qt5
- - python-qt5-devel
- - make
- - python-pathlib2
- - python-requests
+pisiman/required_packages.txt dosyasındaki programların sisteminizde kurulu olması gerekmektedir.
+otomatik kurulum ve çalıştırma için pisiman dizininde `./run.sh` komutunu çalıştırmanız yeterli.
+Not: konsolda kurulum ve çalıştırma için sudo ile parola istenmektedir.  
 
-Requirements kısımdaki programların sisteminizde kurulu olması gerekmektedir.
 Çalıştırmadan önce pisiman/not dosyasını okuyun.
