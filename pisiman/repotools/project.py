@@ -254,7 +254,6 @@ class Project:
         if not self.live_repo_uri:
             self.live_repo_uri = ""
 
-
         def __packageSelection(node):
             # Fill in the packages
             selectedComponents = [ ]
@@ -593,3 +592,10 @@ class Project:
         if clean and os.path.exists(path):
             os.unlink(path)
         return path
+
+    def display_manager(self):
+        for dm in ["sddm", "lxdm", "xdm", "ligthdm"]:
+            if dm in self.all_install_image_packages:
+                return dm
+
+        return None

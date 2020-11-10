@@ -414,6 +414,34 @@ def setup_live_sddm(project):
             sddmconf_path))
 
 
+def setup_live_lxdm(project):
+    image_dir = project.image_dir()
+    lxdmconf_path = os.path.join(image_dir, "etc/lxdm/lxdm.conf")
+    if os.path.exists(lxdmconf_path):
+        lines = []
+        for line in open(lxdmconf_path, "r").readlines():
+            if line.startswith("# autologin=") or line.startswith("autologin="):
+                lines.append("# autologin=pisi\n")
+            # elif line.startswith("Session"):
+            #     # lines.append("Session=/usr/share/xsessions/plasma-mediacenter\n") #this code may be have an error
+            #     lines.append("Session=/usr/share/xsessions/plasma\n")
+            # elif line.startswith("#ServerTimeout="):
+            #    lines.append("ServerTimeout=60\n")
+            else:
+                lines.append(line)
+        open(lxdmconf_path, "w").write("".join(lines))
+    else:
+        print("*** {} doesn't exist, setup_live_lxdm() returned".format(
+            lxdmconf_path))
+
+
+def setup_live_dm(project, dm):
+    if dm == "sddm":
+        setup_live_sddm(project)
+    elif dm == "lxdm":
+        setup_live_lxdm(project)
+
+
 def setup_live_policykit_conf(project):
     policykit_conf_tmpl = """[Live CD Rules]
 Identity=unix-user:pisi
@@ -542,10 +570,18 @@ def squash_image(project):
             chrun("chown -R pisi:wheel /home/pisi/.config")
             chrun("chown -R pisi:wheel /home/pisi/.local")
 
-            os.system("cp -rf %s/%s %s/var/cache/pisi/packages/" % (repo.cache_dir, repo.packages['sddm'].uri, image_dir))
-
+            # os.system("cp -rf %s/%s %s/var/cache/pisi/packages/" % (repo.cache_dir, repo.packages['sddm'].uri, image_dir))
 
         # kde yapılandırması ================================================
+
+        # display manager yapılandırması ====================================
+        if project.display_manager() is not None:
+            os.system("cp -rf {}/{} {}/var/cache/pisi/packages/".format(
+                repo.cache_dir,
+                repo.packages[project.display_manager()].uri,
+                image_dir)
+            )
+        # display manager yapılandırması ====================================
 
     # WARNING: bu adım sqfs kurulum ekleneceği için kaldırıldı
     # # paket listesi
@@ -871,8 +907,10 @@ def make_image(project):
         os.unlink(path2)
         run('mv "%s" "%s"' % (path1, path2))
 
-        if project.type != "install" and ("sddm" in project.all_packages):
-            setup_live_sddm(project)  # setup_live_sddm olarak değiştirildi
+        # if project.type != "install" and ("sddm" in project.all_packages):
+        if project.type != "install" and project.display_manager() is not None:
+            # setup_live_sddm(project)  # setup_live_sddm olarak değiştirildi
+            setup_live_dm(project, project.display_manager())
             setup_live_policykit_conf(project)
 
         if project.type == "install":
